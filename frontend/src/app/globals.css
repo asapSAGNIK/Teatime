@@ -255,6 +255,31 @@ h1, h2, h3, h4, h5 {
   transform: scale(0.95);
 }
 
+.continued-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+  width: 100%;
+}
+
+.continued-label {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 0.85rem !important;
+  color: #000 !important;
+  padding: 0.25rem 1rem !important;
+  font-weight: 900 !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  background-color: transparent !important;
+  transition: background-color 0.1s ease-in-out !important;
+}
+
+.continued-label:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important; /* Darker paper-tint highlight on hover */
+}
+
 .article-card-header {
   break-inside: avoid;
   page-break-inside: avoid;

@@ -78,23 +78,23 @@ export default async function Home() {
   // Shuffle the pools once to get internal variety
   intelligencePool.sort(() => Math.random() - 0.5);
 
-  // 4. DETERMINISTIC SPACING INJECTION (REFINED SPREAD)
+  // 4. CHECKERBOARD GRID SPREAD (DIVERGING FROM COLUMN CLUMPING)
   let masterItems = [];
-  let intelIdx = 0;
+  let aIdx = 0;
+  let iIdx = 0;
   
-  for (let i = 0; i < articlesPool.length; i++) {
-    // Inject intel before every 2 articles
-    if (i % 2 === 0 && intelIdx < intelligencePool.length) {
-       masterItems.push(intelligencePool[intelIdx]);
-       intelIdx++;
+  // High-precision interleaving: 2 articles, 1 intel, repeat. 
+  // This pushes intelligence out of the corners and into the early/middle columns.
+  while (aIdx < articlesPool.length || iIdx < intelligencePool.length) {
+    if (aIdx < articlesPool.length) {
+      masterItems.push(articlesPool[aIdx++]);
     }
-    masterItems.push(articlesPool[i]);
-  }
-
-  // Final sprinkle if needed
-  while (intelIdx < intelligencePool.length) {
-    masterItems.push(intelligencePool[intelIdx]);
-    intelIdx++;
+    if (aIdx < articlesPool.length) {
+      masterItems.push(articlesPool[aIdx++]);
+    }
+    if (iIdx < intelligencePool.length) {
+      masterItems.push(intelligencePool[iIdx++]);
+    }
   }
 
   return (

@@ -125,17 +125,8 @@ export default function ArticleCard({ article }) {
             </p>
           ))}
           {paragraphs.length > 3 && (
-            <div style={{ textAlign: 'center', marginTop: '1rem', paddingTop: '0.5rem' }}>
-              <Link href={`/article/${slug}`} style={{ 
-                fontFamily: "'Courier New', Courier, monospace",
-                fontSize: '0.85rem',
-                color: '#000',
-                padding: '0.2rem 0.8rem',
-                backgroundColor: 'rgba(0, 0, 0, 0.08)', /* Darker 'tint' highlight of paper */
-                fontWeight: 'bold',
-                textDecoration: 'none',
-                display: 'inline-block'
-              }}>
+            <div className="continued-container">
+              <Link href={`/article/${slug}`} className="continued-label">
                 CONTINUED.
               </Link>
             </div>
