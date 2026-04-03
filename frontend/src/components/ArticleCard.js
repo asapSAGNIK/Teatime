@@ -125,9 +125,17 @@ export default function ArticleCard({ article }) {
             </p>
           ))}
           {paragraphs.length > 3 && (
-            <div style={{ textAlign: 'center', marginTop: '1rem', borderTop: '1px solid #ddd', paddingTop: '0.5rem' }}>
-              <Link href={`/article/${slug}`} style={{ fontStyle: 'italic', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                CONTINUED ON PAGE 2 →
+            <div style={{ textAlign: 'right', marginTop: '1rem', paddingTop: '0.5rem' }}>
+              <Link href={`/article/${slug}`} style={{ 
+                fontFamily: "'Courier New', Courier, monospace",
+                fontSize: '0.85rem',
+                color: '#000',
+                padding: '0.15rem 0.5rem',
+                backgroundColor: 'rgba(0, 0, 0, 0.04)', /* super-mild gray highlight */
+                borderLeft: '2px solid rgba(0,0,0,0.1)',
+                textDecoration: 'none'
+              }}>
+                CONTINUED.
               </Link>
             </div>
           )}

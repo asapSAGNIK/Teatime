@@ -93,9 +93,10 @@ export default async function Home() {
     masterItems.push(articlesPool[i]);
     
     // Inject at fixed interval points for perfect spacing
-    // Since we already put one at the very top, we can resume spacing every 3-4 articles
+    // Spreading them more aggressively (every 2nd article) to ensure 
+    // they populate earlier columns and don't clump at the bottom right.
     if (intelIdx < intelligencePool.length) {
-      if ((i + 1) % 3 === 0) {
+      if ((i + 1) % 2 === 0) {
          masterItems.push(intelligencePool[intelIdx]);
          intelIdx++;
       }
