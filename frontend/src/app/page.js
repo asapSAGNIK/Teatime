@@ -40,14 +40,15 @@ export default async function Home() {
       }
       const unionSize = new Set([...words, ...seenWords]).size;
       
-      // If titles share >40% of their substantial words, they are covering the same story/event identically
-      if (unionSize > 0 && (intersection / unionSize) > 0.4) {
+      // Looser overlap (0.7) to keep the paper full and avoid 'muting' news
+      if (unionSize > 0 && (intersection / unionSize) > 0.7) {
         return false;
       }
     }
     seenHeadlineSets.push(words);
     return true;
   });
+
 
   // 2. Prepare Items
   const articlesPool = uniqueArticles.map(a => ({ type: 'article', data: a }));
@@ -75,19 +76,17 @@ export default async function Home() {
     intelligencePool.push({ type: 'niche', data: n });
   });
 
-  // 4. SMART PRODUCTION-SPREAD (DIVIDE INTO 4 COLUMNS)
-  const columns = [[], [], [], []];
+  // 4. BALANCED MASTER LIST
+  let masterItems = [];
   let aIdx = 0;
   let iIdx = 0;
 
-  // Optimized interleave with forced column-alternation to prevent clumping
+  // Interleave 1 monitor every 3-4 articles
   while (aIdx < articlesPool.length || iIdx < intelligencePool.length) {
-    for (let c = 0; c < 4; c++) {
-      // Each column gets 2 Articles followed by 1 Intel box whenever available
-      if (aIdx < articlesPool.length) columns[c].push(articlesPool[aIdx++]);
-      if (aIdx < articlesPool.length) columns[c].push(articlesPool[aIdx++]);
-      if (iIdx < intelligencePool.length) columns[c].push(intelligencePool[iIdx++]);
-    }
+    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
+    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
+    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
+    if (iIdx < intelligencePool.length) masterItems.push(intelligencePool[iIdx++]);
   }
 
   return (
@@ -97,27 +96,25 @@ export default async function Home() {
       </div>
 
       <div className="article-grid">
-        {columns.map((col, cIdx) => (
-          <div key={cIdx} className="column-well">
-            {col.map((item, idx) => (
-              <div key={idx} className="grid-cell">
-                {item.type === 'article' && <ArticleCard article={item.data} />}
-                {(item.type === 'trend' || item.type === 'video' || item.type === 'niche') && (
-                  <IntelligenceCard type={item.type} data={item.data} />
-                )}
-              </div>
-            ))}
-          </div>
-        ))}
-        {articlesPool.length === 0 && (
-          <div className="empty-state" style={{ flex: 1, textAlign: 'center', padding: '5rem 0' }}>
+        {masterItems.length === 0 ? (
+          <div className="empty-state" style={{ textAlign: 'center', padding: '5rem 0' }}>
             <p style={{ fontSize: '1.2rem', fontStyle: 'italic' }}>The autonomous newsroom is currently gathering intelligence...</p>
           </div>
+        ) : (
+          masterItems.map((item, idx) => (
+            <div key={idx} className="grid-cell">
+              {item.type === 'article' && <ArticleCard article={item.data} />}
+              {(item.type === 'trend' || item.type === 'video' || item.type === 'niche') && (
+                <IntelligenceCard type={item.type} data={item.data} />
+              )}
+            </div>
+          ))
         )}
       </div>
     </div>
   );
 }
+
 
 
 
