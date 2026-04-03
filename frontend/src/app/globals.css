@@ -157,22 +157,26 @@ h1, h2, h3, h4, h5 {
 }
 
 /* High-Fidelity Dense Newspaper Layout — Text-Well First */
-/* High-Fidelity Gapless Newspaper Sheet — Fully Scrolling */
+/* Production-Grade Dense Newspaper Sheet */
 .article-grid {
-  column-count: 4;
-  column-gap: 1.5rem;
-  column-fill: balance; /* Browser-native perfect baseline alignment */
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
   margin-top: 1rem;
   width: 100%;
+}
+
+.column-well {
+  flex: 1;
+  min-width: 0; /* Prevents flex overflow */
 }
 
 .grid-cell {
   display: block;
   margin-bottom: 2rem;
-  /* Allow natural flow to the baseline: 
-     Articles can break across columns to fill every pixel, 
-     but we'll keep the Virlo boxes unified. */
+  /* Fixed tight flow */
 }
+
 
 
 
