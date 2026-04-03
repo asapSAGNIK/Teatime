@@ -1,0 +1,653 @@
+@import url('https://fonts.cdnfonts.com/css/chomsky');
+@import url('https://fonts.googleapis.com/css2?family=Baskervville:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --bg-color: #d8d6d0;
+  --text-main: #0f0f0f;
+  --text-muted: #3a3a3a;
+  --accent: #1a1a1a;
+  --border-color: #1a1a1a;
+  --card-bg: rgba(30, 30, 30, 0.85);
+  --hover-bg: #333333;
+
+  --font-serif: 'Playfair Display', 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-times: 'Times New Roman', Times, serif;
+
+  /* Newspaper — monochromatic sheet */
+  --paper-bg: #dcd9d3;
+  --paper-text: #000000;
+  --paper-border: #000000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.newsprint {
+  min-height: 100vh;
+  /* Warm newsprint base + tileable grain */
+  background-color: var(--bg-color);
+  background-image: url('https://www.transparenttextures.com/patterns/natural-paper.png');
+  background-repeat: repeat;
+  background-size: auto;
+  background-attachment: scroll;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  padding: 2rem 5vw; /* Ink margin from the physical edge of the window/paper */
+}
+
+/* Text selection styling — grey, not default blue */
+::selection {
+  background-color: #6b7280;
+  color: #f0f0f0;
+}
+::-moz-selection {
+  background-color: #6b7280;
+  color: #f0f0f0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--text-main);
+  transition: color 0.15s ease;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Layout */
+.container {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+/* Horizontal Layout inside border lines — sits on same newsprint as body */
+.newspaper-nav {
+  margin-top: 1.5rem;
+  padding: 1.5rem 0;
+  margin-bottom: 3rem;
+  border-top: 1px solid #1a1a1a;
+  border-bottom: 1px solid #1a1a1a;
+  background: transparent;
+  position: relative;
+}
+
+.newspaper-nav::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 0;
+  right: 0;
+  border-top: 4px solid #1a1a1a;
+}
+
+.newspaper-nav::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  right: 0;
+  border-bottom: 4px solid #1a1a1a;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.site-title {
+  font-family: 'Chomsky', sans-serif;
+  font-size: 3.5rem;
+  color: #1a1a1a;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.nav-links a {
+  font-family: 'Chomsky', sans-serif;
+  color: #1a1a1a;
+  text-transform: none;
+  font-weight: normal;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+  color: #000000;
+}
+
+/* We no longer need forced structural layouts, using broadsheet column-count */
+.broadsheet-wrapper {
+  width: 100%;
+}
+
+/* Reverting to media query for core wrapper if needed */
+@media (max-width: 1024px) {
+  /* Simplified for mobile Native Column Count */
+}
+
+
+/* Center column — main news well */
+.center-news {
+  min-width: 0;
+}
+
+/* Article Cards — vertical rectangular newspaper blocks */
+.article-grid {
+  display: block;
+  column-count: 4;
+  column-gap: 2rem;
+  column-rule: 1px solid var(--border-color);
+  margin-top: 1.5rem;
+}
+
+.article-body-columns {
+  margin-top: 1.5rem;
+  font-family: var(--font-source-serif), serif;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--text-main);
+  text-align: justify;
+}
+
+.article-body-columns p {
+  margin-bottom: 1rem;
+}
+
+.article-body-columns h3 {
+  font-family: 'Chomsky', sans-serif;
+  font-size: 1.5rem;
+  font-weight: normal;
+  margin: 1.5rem 0 0.5rem;
+  column-span: all;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.drop-cap-letter {
+  float: left;
+  font-family: var(--font-playfair), serif;
+  font-size: 4.5rem;
+  line-height: 0.75;
+  padding: 0 0.4rem 0 0;
+  margin-top: 0.15rem;
+  margin-right: 0.1rem;
+  font-weight: 900;
+  color: #000000;
+}
+
+.article-card {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  padding: 0 0 1.5rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  border-radius: 0;
+  transition: background-color 0.2s ease;
+}
+
+.article-card:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.article-category {
+  color: var(--text-main);
+  font-family: var(--font-source-serif), serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.35rem;
+  display: inline-block;
+}
+
+.article-category--large {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.article-card h2 {
+  font-family: var(--font-playfair), serif;
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  font-weight: 900;
+  margin-bottom: 0.65rem;
+  color: #000000;
+  line-height: 1.15;
+}
+
+.article-card h2 a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Lede / dek in multi-column newspaper columns */
+.newspaper-lede {
+  font-family: var(--font-source-serif), serif;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  line-height: 1.38;
+  margin-bottom: 0.75rem;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.article-card-meta {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: var(--font-source-serif), serif;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 900px) {
+  .article-grid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .article-grid {
+    column-count: 1;
+    column-rule: none;
+  }
+}
+
+/* Section title */
+.section-title {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #1a1a1a;
+  display: block;
+  position: relative;
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 3px; left: 0; right: 0;
+  border-bottom: 4px solid #1a1a1a;
+}
+
+.section-title h1 {
+  font-family: 'Chomsky', sans-serif;
+  font-weight: 400;
+  color: #000000;
+}
+
+.section-title--newsprint h1 {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.1;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 3rem 0;
+  color: var(--text-muted);
+}
+.empty-hint {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  opacity: 0.6;
+}
+
+/* Sidebar / Virlo Pulse */
+.sidebar {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  height: fit-content;
+  color: #ededed;
+}
+
+.sidebar-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 1.5rem 0;
+}
+
+.sidebar-subtitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.sidebar h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar h3::before {
+  content: '';
+}
+
+/* Trend Topics (from /trends/digest) */
+.trend-topic {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.trend-topic:last-child {
+  border-bottom: none;
+}
+
+.trend-rank {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-width: 24px;
+  padding-top: 2px;
+}
+
+.trend-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.trend-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Viral Video Cards (from /videos/digest) */
+.viral-videos {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.viral-card {
+  display: block;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.viral-card:hover {
+  transform: translateY(-2px);
+  border-color: #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.viral-thumb {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.viral-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem 0;
+  font-size: 0.75rem;
+}
+
+.platform-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background-color: var(--hover-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.viral-views {
+  color: #8ba4c4;
+  font-weight: 600;
+}
+
+.viral-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 0.25rem 0.75rem 0.75rem;
+  line-height: 1.3;
+}
+
+.sidebar-powered {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.sidebar-powered a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Article Detail Page — broadsheet columns */
+.article-detail {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 0;
+}
+
+.article-header {
+  margin-bottom: 1.75rem;
+  text-align: center;
+}
+
+.article-header h1 {
+  font-family: var(--font-playfair), serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  margin: 0.75rem 0 1rem;
+  color: #000000;
+  text-wrap: balance;
+}
+
+.article-dek {
+  font-family: var(--font-source-serif), serif;
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  font-style: italic;
+  line-height: 1.45;
+  max-width: 52rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.meta-info {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-family: var(--font-source-serif), serif;
+}
+
+.article-body {
+  font-family: var(--font-source-serif), serif;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--text-main);
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  column-count: 3;
+  column-gap: 1.75rem;
+  column-rule: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.article-body p {
+  margin-bottom: 1rem;
+  orphans: 3;
+  widows: 3;
+}
+
+/* Drop Cap — white letter on black square */
+.article-body p:first-of-type::first-letter {
+  font-family: var(--font-playfair), serif;
+  font-size: 4.25rem;
+  font-weight: 700;
+  float: left;
+  line-height: 0.85;
+  margin-right: 0.2em;
+  margin-top: 0.08em;
+  color: #ffffff;
+  background-color: #000000;
+  padding: 0.2rem 0.55rem 0.35rem;
+  border-radius: 1px;
+}
+
+.article-body h2 {
+  font-family: var(--font-playfair), serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 1.75rem 0 0.75rem;
+  color: #000000;
+  column-span: all;
+  text-align: left;
+  break-after: avoid;
+}
+
+@media (max-width: 900px) {
+  .article-body {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .article-body {
+    column-count: 1;
+    column-rule: none;
+  }
+}
+
+/* Virlo Badge — print-style inset rule */
+.virlo-badge {
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid #1a1a1a;
+  border-left: 4px solid #000000;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0 1.75rem;
+  border-radius: 0;
+  font-family: var(--font-source-serif), serif;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.virlo-badge strong {
+  color: #000000;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 4rem 0 2rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: var(--font-source-serif), serif;
+  border-top: 3px double #1a1a1a;
+  margin-top: 4rem;
+}
+
+/* Newspaper Blocks for Video / Trending Sidebars */
+.newspaper-block {
+  background-color: var(--paper-bg);
+  background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+  color: var(--paper-text);
+  padding: 1.25rem;
+  border: 1px solid var(--paper-border);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.newspaper-block::before {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px; right: 2px; bottom: 2px;
+  border: 1px solid var(--paper-border);
+  pointer-events: none;
+}
+
+.newspaper-block h3, .newspaper-block h4 {
+  font-family: 'Chomsky', sans-serif;
+  text-align: center;
+  font-size: 1.8rem;
+  border-bottom: 1px solid var(--paper-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--paper-text);
+  font-weight: normal;
+  position: relative;
+}
+.newspaper-block h3::after, .newspaper-block h4::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 3px;
+  border-bottom: 3px solid var(--paper-border);
+}
+
+.newspaper-block a {
+  text-decoration: none;
+  color: inherit;
+}
+/* Side-by-side Intelligence Banner used on Category & Article Pages */
+.intelligence-banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  width: 100%;
+}
+
+.intelligence-banner .newspaper-block {
+  margin-bottom: 0;
+  height: 100%;
+}
+
+/* Ensure the grid inside sidebar matches the new half-width constraint */
+.video-grid-mini {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+  .intelligence-banner {
+    grid-template-columns: 1fr;
+  }
+}

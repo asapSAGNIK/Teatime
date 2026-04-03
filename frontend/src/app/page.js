@@ -1,0 +1,123 @@
+import ArticleCard from '@/components/ArticleCard';
+import IntelligenceCard from '@/components/IntelligenceCard';
+
+const BACKEND_URL = process.env.BACKEND_URL || 'http://127.0.0.1:8000';
+
+async function getArticles() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/articles?limit=25`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (e) {
+    console.error('Failed to fetch articles:', e.message);
+    return [];
+  }
+}
+
+async function getTrending() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/trending`, { cache: 'no-store' });
+    if (!res.ok) return { trends: [], niches: [], instagram: [], youtube: [], videos: [] };
+    return await res.json();
+  } catch (e) {
+    return { trends: [], niches: [], instagram: [], youtube: [], videos: [] };
+  }
+}
+
+export default async function Home() {
+  const [articles, intelligence] = await Promise.all([getArticles(), getTrending()]);
+  
+  // 1. Deduplicate articles
+  const seenHeadlines = new Set();
+  const uniqueArticles = articles.filter(a => {
+    const key = (a.headline || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+    if (seenHeadlines.has(key)) return false;
+    seenHeadlines.add(key);
+    return true;
+  });
+
+  // 2. Prepare Items
+  const articlesPool = uniqueArticles.map(a => ({ type: 'article', data: a }));
+  const intelligencePool = [];
+
+  // 3. Populate Intelligence Pool (DENSE)
+  const trendData = intelligence.trends || [];
+  if (trendData.length > 0) {
+    for (let i = 0; i < trendData.length; i += 3) {
+      intelligencePool.push({ type: 'trend', data: trendData.slice(i, i + 3) });
+    }
+  } else {
+    for (let i = 0; i < 3; i++) intelligencePool.push({ type: 'trend', data: [] });
+  }
+
+  const combinedVideos = [...(intelligence.instagram || []), ...(intelligence.youtube || [])];
+  if (combinedVideos.length > 0) {
+    combinedVideos.forEach(v => intelligencePool.push({ type: 'video', data: v }));
+  } else {
+    for (let i = 0; i < 3; i++) intelligencePool.push({ type: 'video', data: null });
+  }
+
+  const nicheData = intelligence.niches || [];
+  nicheData.slice(0, 4).forEach(n => {
+    intelligencePool.push({ type: 'niche', data: n });
+  });
+
+  // Shuffle the pools once to get internal variety
+  intelligencePool.sort(() => Math.random() - 0.5);
+
+  // 4. DETERMINISTIC SPACING INJECTION
+  // We want variety at the top.
+  let masterItems = [];
+  let intelIdx = 0;
+
+  // ENSURE ONE AT THE VERY TOP (INDEX 0)
+  if (intelIdx < intelligencePool.length) {
+    masterItems.push(intelligencePool[intelIdx]);
+    intelIdx++;
+  }
+  
+  for (let i = 0; i < articlesPool.length; i++) {
+    masterItems.push(articlesPool[i]);
+    
+    // Inject at fixed interval points for perfect spacing
+    // Since we already put one at the very top, we can resume spacing every 3-4 articles
+    if (intelIdx < intelligencePool.length) {
+      if ((i + 1) % 3 === 0) {
+         masterItems.push(intelligencePool[intelIdx]);
+         intelIdx++;
+      }
+    }
+  }
+
+  // Final sprinkle if needed
+  while (intelIdx < intelligencePool.length) {
+    masterItems.push(intelligencePool[intelIdx]);
+    intelIdx++;
+  }
+
+  return (
+    <div className="broadsheet-wrapper" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
+      <div className="section-title" style={{ textAlign: 'center', marginBottom: '2rem', paddingBottom: '1rem' }}>
+        <h1 style={{ fontSize: '3.5rem' }}>Top News & Reports</h1>
+      </div>
+
+      <div className="article-grid">
+        {masterItems.length === 0 ? (
+          <div className="empty-state" style={{ columnSpan: 'all', textAlign: 'center', padding: '5rem 0' }}>
+            <p style={{ fontSize: '1.2rem', fontStyle: 'italic' }}>The autonomous newsroom is currently gathering intelligence...</p>
+          </div>
+        ) : (
+          masterItems.map((item, idx) => (
+            <div key={idx} style={{ breakInside: 'avoid', marginBottom: '1.5rem' }}>
+              {item.type === 'article' ? (
+                <ArticleCard article={item.data} />
+              ) : (
+                <IntelligenceCard type={item.type} data={item.data} />
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}

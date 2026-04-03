@@ -1,0 +1,23 @@
+# Backend and Python
+backend/__pycache__/
+backend/venv/
+backend/aethernews.db
+backend/.env
+backend/*.log
+# Frontend and Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env.local
+frontend/.env.production
+frontend/.env.development
+# System and Miscellaneous
+.DS_Store
+Thumbs.db
+*.pyc
+*.pyo
+venv/
+env/
+.idea/
+.vscode/
