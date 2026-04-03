@@ -135,7 +135,7 @@ export default async function Home() {
           </div>
         ) : (
           masterItems.map((item, idx) => (
-            <div key={idx} style={{ marginBottom: '1.5rem' }}>
+            <div key={idx} style={{ breakInside: 'avoid', marginBottom: '1.5rem' }}>
               {item.type === 'article' ? (
                 <ArticleCard article={item.data} />
               ) : item.type === 'filler' ? (

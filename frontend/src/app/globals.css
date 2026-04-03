@@ -205,13 +205,18 @@ h1, h2, h3, h4, h5 {
 }
 
 .article-card {
-  break-inside: auto; /* Allow breaking to balance columns and fix bottom whitespace */
-  page-break-inside: auto;
+  break-inside: avoid; /* Stop articles from splitting across columns entirely */
+  page-break-inside: avoid;
   padding: 0 0 1rem 0;
   margin-bottom: 1rem;
   border-bottom: 1px solid #1a1a1a;
   border-radius: 0;
   position: relative; /* ensure capsule fits inside */
+}
+
+/* Ensure article content doesn't shred */
+.article-card-header, .article-body-columns {
+  break-inside: avoid;
 }
 
 /* Copy Capsule Button */
