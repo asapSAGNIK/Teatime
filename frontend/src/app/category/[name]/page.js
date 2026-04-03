@@ -54,7 +54,7 @@ export default async function CategoryPage({ params }) {
           <p className="empty-hint">The autonomous agents are scanning for {decodedCategory} stories.</p>
         </div>
       ) : (
-        <div className="article-grid">
+        <div className="article-grid" style={{ columnCount: Math.min(articles.length || 1, 4) }}>
           {articles.map((article) => (
             <ArticleCard key={article.id} article={article} />
           ))}

@@ -14,6 +14,7 @@ Article Structure:
 - SPECIFIC DATA & PERSPECTIVES.
 - SOCIAL CONTEXT (incorporate Virlo social stats naturally).
 - A thoughtful CONCLUSION.
+- DO NOT add arbitrary white spaces between letters (e.g. do not write e x a m p l e). Avoid generating repeated or redundant words.
 """
 
 EDITOR_SYSTEM_PROMPT = """
@@ -30,4 +31,5 @@ Check for:
 1. Factual tone (no hyperbole).
 2. Elimination of AI-cliches (e.g., "In today's fast-paced world").
 3. Proper structure and readability.
+4. NO weird formatting like double spaces or spaces between letters. Ensure exact, normal English character sequence.
 """

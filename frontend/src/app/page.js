@@ -27,12 +27,25 @@ async function getTrending() {
 export default async function Home() {
   const [articles, intelligence] = await Promise.all([getArticles(), getTrending()]);
   
-  // 1. Deduplicate articles
-  const seenHeadlines = new Set();
+  // 1. Smarter Deduplication (Fuzzy Word Overlap)
+  const seenHeadlineSets = [];
   const uniqueArticles = articles.filter(a => {
-    const key = (a.headline || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
-    if (seenHeadlines.has(key)) return false;
-    seenHeadlines.add(key);
+    const title = (a.headline || '').toLowerCase().trim();
+    const words = new Set(title.replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3)); // skip small words
+    
+    for (const seenWords of seenHeadlineSets) {
+      let intersection = 0;
+      for (const w of words) {
+        if (seenWords.has(w)) intersection++;
+      }
+      const unionSize = new Set([...words, ...seenWords]).size;
+      
+      // If titles share >40% of their substantial words, they are covering the same story/event identically
+      if (unionSize > 0 && (intersection / unionSize) > 0.4) {
+        return false;
+      }
+    }
+    seenHeadlineSets.push(words);
     return true;
   });
 
@@ -65,6 +78,15 @@ export default async function Home() {
   // Shuffle the pools once to get internal variety
   intelligencePool.sort(() => Math.random() - 0.5);
 
+  // 4. ADD FILLER ITEMS for gap plugging
+  const fillerPool = [
+    { type: 'filler', data: { title: 'LATEST WIRE', content: 'Continuous coverage from global bureaus...', icon: '📡' } },
+    { type: 'filler', data: { title: 'MARKET PULSE', content: 'Index fluctuations monitored in real-time.', icon: '📉' } },
+    { type: 'filler', data: { title: 'EDITORIAL', content: 'Voices of the autonomous newsroom.', icon: '✍️' } },
+    { type: 'filler', data: { title: 'WEATHER MAP', content: 'Atmospheric patterns shifting across regions.', icon: '🌪️' } },
+  ];
+  fillerPool.sort(() => Math.random() - 0.5);
+
   // 4. DETERMINISTIC SPACING INJECTION
   // We want variety at the top.
   let masterItems = [];
@@ -95,22 +117,34 @@ export default async function Home() {
     intelIdx++;
   }
 
+  // 5. Plug the gaps
+  while (masterItems.length < 15 && fillerPool.length > 0) {
+    masterItems.push(fillerPool.pop());
+  }
+
   return (
     <div className="broadsheet-wrapper" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
-      <div className="section-title" style={{ textAlign: 'center', marginBottom: '2rem', paddingBottom: '1rem' }}>
-        <h1 style={{ fontSize: '3.5rem' }}>Top News & Reports</h1>
+      <div className="section-title" style={{ textAlign: 'center', marginBottom: '1rem', paddingBottom: '0.2rem' }}>
+        <h1 style={{ fontSize: '3.5rem', marginTop: 0, marginBottom: '0.5rem' }}>Top News & Reports</h1>
       </div>
 
-      <div className="article-grid">
+      <div className="article-grid" style={{ columnCount: Math.min(masterItems.filter(i => i.type === 'article').length || 1, 4) }}>
         {masterItems.length === 0 ? (
           <div className="empty-state" style={{ columnSpan: 'all', textAlign: 'center', padding: '5rem 0' }}>
             <p style={{ fontSize: '1.2rem', fontStyle: 'italic' }}>The autonomous newsroom is currently gathering intelligence...</p>
           </div>
         ) : (
           masterItems.map((item, idx) => (
-            <div key={idx} style={{ breakInside: 'avoid', marginBottom: '1.5rem' }}>
+            <div key={idx} style={{ marginBottom: '1.5rem' }}>
               {item.type === 'article' ? (
                 <ArticleCard article={item.data} />
+              ) : item.type === 'filler' ? (
+                <div className="newspaper-block filler-card" style={{ padding: '2rem 1.5rem', textAlign: 'center', borderStyle: 'dashed' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '1rem', opacity: 0.8 }}>{item.data.icon}</div>
+                  <h4 style={{ fontFamily: "'Times New Roman', Times, serif", letterSpacing: '2px', fontWeight: 'bold' }}>{item.data.title}</h4>
+                  <div style={{ margin: '1rem auto', width: '40px', height: '2px', background: '#000' }}></div>
+                  <p style={{ fontStyle: 'italic', fontSize: '0.9rem', opacity: 0.7 }}>{item.data.content}</p>
+                </div>
               ) : (
                 <IntelligenceCard type={item.type} data={item.data} />
               )}

@@ -13,7 +13,7 @@ export default function IntelligenceCard({ type, data }) {
     const hasData = data && data.length > 0;
     return (
       <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '3px double #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>The Pulse</h4>
+        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>The Pulse</h4>
         <div className="trending-list">
           {hasData ? (
             data.map((trend, idx) => (
@@ -45,14 +45,14 @@ export default function IntelligenceCard({ type, data }) {
   if (type === 'video') {
     if (!data) return (
       <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '3px double #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
+        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
         <p style={{ ...timesFont, textAlign: 'center', opacity: 0.7, padding: '1rem 0', fontStyle: 'italic' }}>Monitoring global streams...</p>
       </div>
     );
 
     return (
       <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '3px double #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
+        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
         <div className="viral-card-content" style={{ border: '1px solid #000', padding: '4px' }}>
           {data.thumbnail && (
             <img

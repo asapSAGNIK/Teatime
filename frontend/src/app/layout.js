@@ -1,6 +1,7 @@
 import './globals.css';
 import { Playfair_Display, Inter, Source_Serif_4 } from 'next/font/google';
 import Header from '@/components/Header';
+import TypewriterFooter from '@/components/TypewriterFooter';
 
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
         <main className="container">
           {children}
         </main>
+        <TypewriterFooter />
         <footer>
           <p>© 2026 The Teatime. An AI Autonomous Newsroom created for Vibeathon.</p>
         </footer>

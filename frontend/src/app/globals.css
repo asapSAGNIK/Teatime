@@ -37,9 +37,9 @@ body.newsprint {
   background-size: auto;
   background-attachment: scroll;
   color: var(--text-main);
-  font-family: var(--font-sans);
+  font-family: var(--font-times);
   line-height: 1.6;
-  padding: 2rem 5vw; /* Ink margin from the physical edge of the window/paper */
+  padding: 1vw; /* Edge-to-edge newspaper */
 }
 
 /* Text selection styling — grey, not default blue */
@@ -160,22 +160,27 @@ h1, h2, h3, h4, h5 {
 .article-grid {
   display: block;
   column-count: 4;
-  column-gap: 2rem;
-  column-rule: 1px solid var(--border-color);
-  margin-top: 1.5rem;
+  column-gap: 1.25rem;
+  column-rule: none; /* Remove vertical lines */
+  margin-top: 1rem;
 }
 
 .article-body-columns {
-  margin-top: 1.5rem;
-  font-family: var(--font-source-serif), serif;
-  font-size: 0.95rem;
-  line-height: 1.45;
-  color: var(--text-main);
+  margin-top: 0.25rem;
+  font-family: var(--font-times), var(--font-source-serif), serif;
+  font-size: 1.05rem; /* Bigger, crispy font */
+  line-height: 1.35;
+  color: #000;
   text-align: justify;
 }
 
 .article-body-columns p {
-  margin-bottom: 1rem;
+  margin-bottom: 0;
+  text-indent: 1.5rem;
+}
+
+.article-body-columns p:first-of-type {
+  text-indent: 0;
 }
 
 .article-body-columns h3 {
@@ -200,27 +205,68 @@ h1, h2, h3, h4, h5 {
 }
 
 .article-card {
-  break-inside: avoid;
-  page-break-inside: avoid;
-  padding: 0 0 1.5rem 0;
-  margin-bottom: 1.5rem;
+  break-inside: auto; /* Allow breaking to balance columns and fix bottom whitespace */
+  page-break-inside: auto;
+  padding: 0 0 1rem 0;
+  margin-bottom: 1rem;
   border-bottom: 1px solid #1a1a1a;
   border-radius: 0;
-  transition: background-color 0.2s ease;
+  position: relative; /* ensure capsule fits inside */
+}
+
+/* Copy Capsule Button */
+.copy-capsule {
+  position: absolute;
+  top: 0rem;
+  right: 0rem;
+  background: transparent;
+  border: 1px solid #000;
+  color: #000;
+  font-family: 'Courier New', Courier, monospace; /* typewriter font */
+  font-weight: 600;
+  font-size: 0.65rem;
+  letter-spacing: 0.5px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 50px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(5px);
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.1s, color 0.1s;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.article-card:hover .copy-capsule {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.copy-capsule:hover {
+  transform: scale(1.08); /* small increase in size */
+}
+
+.copy-capsule:active {
+  transform: scale(0.95);
+}
+
+.article-card-header {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .article-card:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: transparent;
 }
 
 .article-category {
   color: var(--text-main);
-  font-family: var(--font-source-serif), serif;
+  font-family: var(--font-times), serif;
   font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.12em;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.15rem;
   display: inline-block;
 }
 
@@ -233,9 +279,10 @@ h1, h2, h3, h4, h5 {
   font-family: var(--font-playfair), serif;
   font-size: clamp(1.35rem, 2.5vw, 1.85rem);
   font-weight: 900;
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.25rem;
+  margin-top: 0;
   color: #000000;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .article-card h2 a:hover {
@@ -256,10 +303,11 @@ h1, h2, h3, h4, h5 {
 }
 
 .article-card-meta {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  font-family: var(--font-source-serif), serif;
-  letter-spacing: 0.02em;
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  .article-grid { column-count: 3; }
 }
 
 @media (max-width: 900px) {
@@ -573,6 +621,52 @@ h1, h2, h3, h4, h5 {
   color: #000000;
 }
 
+/* Footer Typewriter Ticker */
+.footer-typewriter-container {
+  margin-top: 3rem;
+  padding: 1rem 0;
+  border-top: 1px solid #1a1a1a;
+  border-bottom: 1px solid #1a1a1a;
+  background: transparent;
+  position: relative;
+  text-align: center;
+}
+
+.footer-typewriter-container::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 0;
+  right: 0;
+  border-top: 4px solid #1a1a1a;
+}
+
+.footer-typewriter-container::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  right: 0;
+  border-bottom: 4px solid #1a1a1a;
+}
+
+.typewriter-text {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #000;
+  min-height: 1.5rem;
+}
+
+.typewriter-text .cursor {
+  animation: blink 1s infinite step-end;
+}
+
+@keyframes blink {
+  from, to { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 /* Footer */
 footer {
   text-align: center;
@@ -591,16 +685,9 @@ footer {
   color: var(--paper-text);
   padding: 1.25rem;
   border: 1px solid var(--paper-border);
+  border-top: 4px solid var(--paper-border); /* Crisp, thick top border */
   margin-bottom: 1.5rem;
   position: relative;
-}
-
-.newspaper-block::before {
-  content: '';
-  position: absolute;
-  top: 2px; left: 2px; right: 2px; bottom: 2px;
-  border: 1px solid var(--paper-border);
-  pointer-events: none;
 }
 
 .newspaper-block h3, .newspaper-block h4 {

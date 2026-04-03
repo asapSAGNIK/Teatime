@@ -1,6 +1,10 @@
+"use client";
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function ArticleCard({ article }) {
+  const [copied, setCopied] = useState(false);
+
   // Safe extraction
   const category = article?.category || 'News';
   const headline = article?.headline || 'Breaking News';
@@ -47,15 +51,63 @@ export default function ArticleCard({ article }) {
     })
     .filter(p => p.length > 30); // Remove empty or tiny parsed elements
 
+  const handleCopy = async () => {
+    try {
+      const htmlContent = `
+        <div style="font-family: 'Times New Roman', Times, serif;">
+          <h2><strong>${headline}</strong></h2>
+          <br/>
+          ${paragraphs.map(p => `<p>${p}</p>`).join('\n')}
+        </div>
+      `;
+      
+      const textContent = `${headline}\n\n${paragraphs.join('\n\n')}`;
+
+      // ClipboardItem support Check
+      if (window.ClipboardItem) {
+        const blobHtml = new Blob([htmlContent], { type: 'text/html' });
+        const blobText = new Blob([textContent], { type: 'text/plain' });
+        
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/html': blobHtml,
+            'text/plain': blobText
+          })
+        ]);
+      } else {
+        // Fallback for Firefox or older browsers
+        await navigator.clipboard.writeText(textContent);
+      }
+      
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy', err);
+      try {
+        const fallbackText = `${headline}\n\n${paragraphs.join('\n\n')}`;
+        await navigator.clipboard.writeText(fallbackText);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (fallbackErr) {
+        console.error('Fallback copy failed', fallbackErr);
+      }
+    }
+  };
+
   return (
-    <article className="article-card">
+    <article className="article-card group" style={{ position: 'relative' }}>
+      <button 
+        onClick={handleCopy}
+        className="copy-capsule"
+        title="Copy article"
+      >
+        {copied ? 'COPIED' : 'COPY'}
+      </button>
+
       <div className="article-card-header">
         <span className="article-category">{category}</span>
         <h2>{headline}</h2>
         {subtitle ? <p className="newspaper-lede">{subtitle}</p> : null}
-        <div className="article-card-meta">
-          {readTime} min read • AI Authored
-        </div>
       </div>
       
       {paragraphs.length > 0 && (
