@@ -78,29 +78,17 @@ export default async function Home() {
   // Shuffle the pools once to get internal variety
   intelligencePool.sort(() => Math.random() - 0.5);
 
-  // 4. DETERMINISTIC SPACING INJECTION
-  // We want variety at the top.
+  // 4. DETERMINISTIC SPACING INJECTION (REFINED SPREAD)
   let masterItems = [];
   let intelIdx = 0;
-
-  // ENSURE ONE AT THE VERY TOP (INDEX 0)
-  if (intelIdx < intelligencePool.length) {
-    masterItems.push(intelligencePool[intelIdx]);
-    intelIdx++;
-  }
   
   for (let i = 0; i < articlesPool.length; i++) {
-    masterItems.push(articlesPool[i]);
-    
-    // Inject at fixed interval points for perfect spacing
-    // Spreading them more aggressively (every 2nd article) to ensure 
-    // they populate earlier columns and don't clump at the bottom right.
-    if (intelIdx < intelligencePool.length) {
-      if ((i + 1) % 2 === 0) {
-         masterItems.push(intelligencePool[intelIdx]);
-         intelIdx++;
-      }
+    // Inject intel before every 2 articles
+    if (i % 2 === 0 && intelIdx < intelligencePool.length) {
+       masterItems.push(intelligencePool[intelIdx]);
+       intelIdx++;
     }
+    masterItems.push(articlesPool[i]);
   }
 
   // Final sprinkle if needed
