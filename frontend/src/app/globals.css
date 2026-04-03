@@ -156,51 +156,42 @@ h1, h2, h3, h4, h5 {
   min-width: 0;
 }
 
-/* Flex-based Multi-Column Layout (For Common Baseline) */
-.article-grid-flex {
-  display: flex;
-  gap: 1.5rem;
-  align-items: stretch;
-  width: 100%;
+/* High-Fidelity Dense Grid — The "Perfect" Newspaper Sheet */
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0; /* No gaps between columns for a tight, printed feel */
+  border-top: 1px solid #1a1a1a;
+  border-left: 1px solid #1a1a1a;
 }
 
-.article-column {
-  flex: 1;
+.grid-cell {
+  border-right: 1px solid #1a1a1a;
+  border-bottom: 1px solid #1a1a1a;
+  padding: 1.25rem;
+  background: transparent;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* This forces the common baseline */
-  min-width: 0;
+  min-height: 480px; /* Uniform height for baseline alignment */
+  overflow: hidden;
+  position: relative;
 }
 
-.grid-item-wrapper {
-  margin-bottom: 2rem;
-  width: 100%;
-}
-
-.grid-item-wrapper:last-child {
-  margin-bottom: 0;
-}
-
-@media (max-width: 1200px) {
-  .article-column:nth-child(4) { display: none; }
-}
-
-@media (max-width: 900px) {
-  .article-column:nth-child(3) { display: none; }
-}
-
-@media (max-width: 600px) {
-  .article-grid-flex { flex-direction: column; }
-  .article-column { width: 100%; }
-}
 
 .article-body-columns {
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
   font-family: var(--font-times), var(--font-source-serif), serif;
-  font-size: 1.05rem; /* Bigger, crispy font */
-  line-height: 1.35;
+  font-size: 1.02rem;
+  line-height: 1.3;
   color: #000;
   text-align: justify;
+  /* Fixed Baseline Clamping */
+  display: -webkit-box;
+  -webkit-line-clamp: 10; /* Clamp body text to keep the row aligned */
+  -webkit-box-orient: vertical;
+  line-clamp: 10;
+  overflow: hidden;
+  flex-grow: 1;
 }
 
 .article-body-columns p {
@@ -234,15 +225,16 @@ h1, h2, h3, h4, h5 {
 }
 
 .article-card {
-  padding: 0 0 1rem 0;
-  margin-bottom: 0; /* Handled by grid-item-wrapper */
-  border-bottom: 1px solid #1a1a1a;
-  border-radius: 0;
-  position: relative; 
-  height: 100%; /* Allow stretching for baseline */
+  height: 100%;
   display: flex;
   flex-direction: column;
+  margin-bottom: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  position: relative;
 }
+
 
 /* Ensure article content doesn't shred */
 .article-card-header, .article-body-columns {
@@ -337,12 +329,18 @@ h1, h2, h3, h4, h5 {
 
 .article-card h2 {
   font-family: var(--font-playfair), serif;
-  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  font-size: 1.45rem;
   font-weight: 900;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
   margin-top: 0;
   color: #000000;
   line-height: 1.1;
+  /* Clamp headlines to 3 lines max to protect baseline */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  overflow: hidden;
 }
 
 .article-card h2 a:hover {
@@ -367,14 +365,15 @@ h1, h2, h3, h4, h5 {
 }
 
 @media (max-width: 1200px) {
-  .article-grid { column-count: 3; }
+  .article-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 900px) {
   .article-grid {
-    column-count: 2;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
+
 
 @media (max-width: 600px) {
   .article-grid {
@@ -740,15 +739,15 @@ footer {
 
 /* Newspaper Blocks for Video / Trending Sidebars */
 .newspaper-block {
-  background-color: var(--paper-bg);
-  background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
-  color: var(--paper-text);
-  padding: 1.25rem;
-  border: 1px solid var(--paper-border);
-  border-top: 4px solid var(--paper-border); /* Crisp, thick top border */
-  margin-bottom: 1.5rem;
-  position: relative;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
+
 
 .newspaper-block h3, .newspaper-block h4 {
   font-family: 'Chomsky', sans-serif;

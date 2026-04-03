@@ -12,8 +12,9 @@ export default function IntelligenceCard({ type, data }) {
   if (type === 'trend') {
     const hasData = data && data.length > 0;
     return (
-      <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>The Pulse</h4>
+      <div className="newspaper-block intelligence-card" style={{ ...timesFont, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '0.5rem', textTransform: 'uppercase', fontSize: '1.1rem', textAlign: 'left', fontWeight: 'bold' }}>The Pulse</h4>
+
         <div className="trending-list">
           {hasData ? (
             data.map((trend, idx) => (
@@ -44,23 +45,25 @@ export default function IntelligenceCard({ type, data }) {
 
   if (type === 'video') {
     if (!data) return (
-      <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
+      <div className="newspaper-block intelligence-card" style={{ ...timesFont, height: '100%' }}>
+        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.1rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
         <p style={{ ...timesFont, textAlign: 'center', opacity: 0.7, padding: '1rem 0', fontStyle: 'italic' }}>Monitoring global streams...</p>
       </div>
     );
 
+
     return (
-      <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
-        <div className="viral-card-content" style={{ border: '1px solid #000', padding: '4px' }}>
+      <div className="newspaper-block intelligence-card" style={{ ...timesFont, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '0.5rem', textTransform: 'uppercase', fontSize: '1.1rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
+        <div className="viral-card-content" style={{ border: '1px solid #000', padding: '4px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           {data.thumbnail && (
             <img
               src={data.thumbnail}
               alt={data.description?.slice(0, 40)}
-              style={{ width: '100%', height: 'auto', filter: 'grayscale(100%) sepia(20%)', contrast: '1.1' }}
+              style={{ width: '100%', height: '180px', objectFit: 'cover', filter: 'grayscale(100%) sepia(20%)', contrast: '1.1', marginBottom: '0.5rem' }}
             />
           )}
+
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #000', marginBottom: '0.5rem' }}>
             <span style={{ ...timesFont, fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase' }}>{data.platform}</span>
             <span style={{ ...timesFont, fontSize: '0.8rem' }}>{formatViews(data.views)} views</span>

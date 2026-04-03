@@ -78,80 +78,72 @@ export default async function Home() {
   // Shuffle the pools once to get internal variety
   intelligencePool.sort(() => Math.random() - 0.5);
 
-  // 4. PROPORTIONAL INTERLEAVING (NO CLUMPING)
+  // 4. BALANCED DISTRIBUTION GRID (SPREADING BOXES EVERYWHERE)
   let masterItems = [];
+  
+  // Calculate a dynamic interval so Intelligence is spread throughout, not clumped.
   const totalArticles = articlesPool.length;
   const totalIntel = intelligencePool.length;
-  
-  if (totalArticles === 0) {
-    masterItems = intelligencePool;
-  } else if (totalIntel === 0) {
-    masterItems = articlesPool;
-  } else {
-    // Distribute intel proportionally among articles
-    const intelPerArticle = totalIntel / totalArticles;
-    let intelAccumulator = 0;
-    let aIdx = 0;
-    let iIdx = 0;
+  const totalItems = totalArticles + totalIntel;
+  const interval = totalIntel > 0 ? Math.floor(totalArticles / totalIntel) : 0;
 
-    while (aIdx < totalArticles || iIdx < totalIntel) {
-      if (aIdx < totalArticles) {
-        masterItems.push(articlesPool[aIdx++]);
-        intelAccumulator += intelPerArticle;
-        
-        // Push as many intel items as the ratio allows for this step
-        while (intelAccumulator >= 1 && iIdx < totalIntel) {
-          masterItems.push(intelligencePool[iIdx++]);
-          intelAccumulator -= 1;
-        }
-      } else {
-        // Fallback for any leftovers
-        masterItems.push(intelligencePool[iIdx++]);
-      }
+  let aIdx = 0;
+  let iIdx = 0;
+  
+  while (aIdx < totalArticles || iIdx < totalIntel) {
+    // Add 'interval' articles, then 1 intel card
+    for (let j = 0; j < interval && aIdx < totalArticles; j++) {
+      masterItems.push(articlesPool[aIdx++]);
+    }
+    if (iIdx < totalIntel) {
+      masterItems.push(intelligencePool[iIdx++]);
+    }
+    // Safety for leftover articles
+    if (iIdx === totalIntel && aIdx < totalArticles) {
+      masterItems.push(articlesPool[aIdx++]);
     }
   }
 
-  // 5. MANUAL COLUMN DISTRIBUTION (FOR COMMON BASELINE)
-  const numCols = Math.min(uniqueArticles.length || 1, 4);
-  const columns = Array.from({ length: numCols }, () => []);
-  
-  // High-fidelity distribution: Item 0 -> Col 1, Item 1 -> Col 2... 
-  // This ensures a horizontal "spread" of content types.
-  masterItems.forEach((item, idx) => {
-    columns[idx % numCols].push(item);
-  });
+  // 5. FILL THE GRID (ELIMINATE BOTTOM WHITE SPACE)
+  // Ensure the grid is a perfect rectangle by padding the array to a multiple of 4
+  const cols = 4;
+  const remainder = masterItems.length % cols;
+  if (remainder !== 0) {
+    const paddingNeeded = cols - remainder;
+    for (let p = 0; p < paddingNeeded; p++) {
+      // Add a 'null' or empty placeholder card that still renders a grid border
+      masterItems.push({ type: 'padding', data: null });
+    }
+  }
 
   return (
     <div className="broadsheet-wrapper" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
-      <div className="section-title" style={{ textAlign: 'center', marginBottom: '1rem', paddingBottom: '0.2rem' }}>
+      <div className="section-title" style={{ textAlign: 'center', marginBottom: 0, paddingBottom: '0.2rem' }}>
         <h1 style={{ fontSize: '3.5rem', marginTop: 0, marginBottom: '0.5rem' }}>Top News & Reports</h1>
       </div>
 
-      {masterItems.length === 0 ? (
-        <div className="article-grid" style={{ display: 'block' }}>
-          <div className="empty-state" style={{ textAlign: 'center', padding: '5rem 0' }}>
+      <div className="article-grid">
+        {masterItems.length === 0 ? (
+          <div className="empty-state" style={{ gridColumn: 'span 4', textAlign: 'center', padding: '5rem 0' }}>
             <p style={{ fontSize: '1.2rem', fontStyle: 'italic' }}>The autonomous newsroom is currently gathering intelligence...</p>
           </div>
-        </div>
-      ) : (
-        <div className="article-grid-flex">
-          {columns.map((colItems, colIdx) => (
-            <div key={colIdx} className="article-column">
-              {colItems.map((item, idx) => (
-                <div key={idx} className="grid-item-wrapper">
-                  {item.type === 'article' ? (
-                    <ArticleCard article={item.data} />
-                  ) : (
-                    <IntelligenceCard type={item.type} data={item.data} />
-                  )}
+        ) : (
+          masterItems.map((item, idx) => (
+            <div key={idx} className="grid-cell">
+              {item.type === 'article' && <ArticleCard article={item.data} />}
+              {(item.type === 'trend' || item.type === 'video' || item.type === 'niche') && (
+                <IntelligenceCard type={item.type} data={item.data} />
+              )}
+              {item.type === 'padding' && (
+                <div style={{ opacity: 0.3, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '0.8rem', fontStyle: 'italic' }}>Wire signal stable...</span>
                 </div>
-              ))}
-              {/* This "pusher" ensures columns with few items still align titles at the top, 
-                  but we'll use justify-content in CSS for the true baseline. */}
+              )}
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }
+

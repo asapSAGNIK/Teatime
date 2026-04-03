@@ -111,7 +111,7 @@ export default function ArticleCard({ article }) {
       </div>
       
       {paragraphs.length > 0 && (
-        <div className="article-body-columns">
+        <div className="article-body-columns" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {paragraphs.slice(0, 3).map((para, i) => (
             <p key={i} className={i === 0 ? 'drop-cap-para' : ''}>
               {i === 0 ? (
@@ -124,15 +124,18 @@ export default function ArticleCard({ article }) {
               )}
             </p>
           ))}
-          {paragraphs.length > 3 && (
-            <div className="continued-container">
-              <Link href={`/article/${slug}`} className="continued-label">
-                CONTINUED.
-              </Link>
-            </div>
-          )}
+          <div style={{ marginTop: 'auto' }}>
+            {paragraphs.length > 3 && (
+                <div className="continued-container" style={{ marginTop: '1rem' }}>
+                    <Link href={`/article/${slug}`} className="continued-label">
+                        CONTINUED.
+                    </Link>
+                </div>
+            )}
+          </div>
         </div>
       )}
     </article>
+
   );
 }
