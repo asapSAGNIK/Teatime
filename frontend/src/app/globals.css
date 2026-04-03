@@ -156,15 +156,42 @@ h1, h2, h3, h4, h5 {
   min-width: 0;
 }
 
-/* Article Cards — vertical rectangular newspaper blocks */
-.article-grid {
-  display: block;
-  column-count: 4;
-  column-gap: 1.5rem;
-  column-fill: balance;
-  column-rule: 1px solid rgba(0, 0, 0, 0.1);
-  margin-top: 2rem;
+/* Flex-based Multi-Column Layout (For Common Baseline) */
+.article-grid-flex {
+  display: flex;
+  gap: 1.5rem;
+  align-items: stretch;
   width: 100%;
+}
+
+.article-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* This forces the common baseline */
+  min-width: 0;
+}
+
+.grid-item-wrapper {
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.grid-item-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1200px) {
+  .article-column:nth-child(4) { display: none; }
+}
+
+@media (max-width: 900px) {
+  .article-column:nth-child(3) { display: none; }
+}
+
+@media (max-width: 600px) {
+  .article-grid-flex { flex-direction: column; }
+  .article-column { width: 100%; }
 }
 
 .article-body-columns {
@@ -207,13 +234,14 @@ h1, h2, h3, h4, h5 {
 }
 
 .article-card {
-  break-inside: avoid; /* Stop articles from splitting across columns entirely */
-  page-break-inside: avoid;
   padding: 0 0 1rem 0;
-  margin-bottom: 1rem;
+  margin-bottom: 0; /* Handled by grid-item-wrapper */
   border-bottom: 1px solid #1a1a1a;
   border-radius: 0;
-  position: relative; /* ensure capsule fits inside */
+  position: relative; 
+  height: 100%; /* Allow stretching for baseline */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Ensure article content doesn't shred */
@@ -261,7 +289,7 @@ h1, h2, h3, h4, h5 {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 0.75rem;
+  margin-top: 1.5rem;
   padding-top: 0.5rem;
   width: 100%;
 }

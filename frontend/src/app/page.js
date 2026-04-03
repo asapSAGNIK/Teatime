@@ -53,21 +53,24 @@ export default async function Home() {
   const articlesPool = uniqueArticles.map(a => ({ type: 'article', data: a }));
   const intelligencePool = [];
 
-  // 3. Populate Intelligence Pool (DENSE but NO PLACEHOLDERS)
+  // 3. Populate Intelligence Pool (DENSE)
   const trendData = intelligence.trends || [];
   if (trendData.length > 0) {
     for (let i = 0; i < trendData.length; i += 3) {
-      const chunk = trendData.slice(i, i + 3);
-      if (chunk.length > 0) {
-        intelligencePool.push({ type: 'trend', data: chunk });
-      }
+      intelligencePool.push({ type: 'trend', data: trendData.slice(i, i + 3) });
     }
+  } else {
+    for (let i = 0; i < 3; i++) intelligencePool.push({ type: 'trend', data: [] });
   }
 
-  const combinedVideos = [...(intelligence.instagram || []), ...(intelligence.youtube || [])].filter(v => v && v.thumbnail);
-  combinedVideos.forEach(v => intelligencePool.push({ type: 'video', data: v }));
+  const combinedVideos = [...(intelligence.instagram || []), ...(intelligence.youtube || [])];
+  if (combinedVideos.length > 0) {
+    combinedVideos.forEach(v => intelligencePool.push({ type: 'video', data: v }));
+  } else {
+    for (let i = 0; i < 3; i++) intelligencePool.push({ type: 'video', data: null });
+  }
 
-  const nicheData = (intelligence.niches || []).filter(n => n && n.name);
+  const nicheData = intelligence.niches || [];
   nicheData.slice(0, 4).forEach(n => {
     intelligencePool.push({ type: 'niche', data: n });
   });
@@ -75,35 +78,48 @@ export default async function Home() {
   // Shuffle the pools once to get internal variety
   intelligencePool.sort(() => Math.random() - 0.5);
 
-  // 4. BALANCED GRID SPREAD (PREVENTS CLUMPING AT BOTTOM)
+  // 4. PROPORTIONAL INTERLEAVING (NO CLUMPING)
   let masterItems = [];
+  const totalArticles = articlesPool.length;
+  const totalIntel = intelligencePool.length;
   
-  // If no intel, just use articles
-  if (intelligencePool.length === 0) {
+  if (totalArticles === 0) {
+    masterItems = intelligencePool;
+  } else if (totalIntel === 0) {
     masterItems = articlesPool;
   } else {
-    // We want to sprinkle intel cards evenly through the articles pool
-    const totalArticles = articlesPool.length;
-    const totalIntel = intelligencePool.length;
-    
-    // Calculate interval. e.g. 10 articles, 2 intel -> interval = 5.
-    // Intel at index 2, 7 etc.
-    const interval = Math.max(2, Math.floor(totalArticles / totalIntel));
-    
-    let aPtr = 0;
-    let iPtr = 0;
-    
-    while (aPtr < totalArticles || iPtr < totalIntel) {
-      // Add 'interval' articles
-      for (let count = 0; count < interval && aPtr < totalArticles; count++) {
-        masterItems.push(articlesPool[aPtr++]);
-      }
-      // Add 1 intel card
-      if (iPtr < totalIntel) {
-        masterItems.push(intelligencePool[iPtr++]);
+    // Distribute intel proportionally among articles
+    const intelPerArticle = totalIntel / totalArticles;
+    let intelAccumulator = 0;
+    let aIdx = 0;
+    let iIdx = 0;
+
+    while (aIdx < totalArticles || iIdx < totalIntel) {
+      if (aIdx < totalArticles) {
+        masterItems.push(articlesPool[aIdx++]);
+        intelAccumulator += intelPerArticle;
+        
+        // Push as many intel items as the ratio allows for this step
+        while (intelAccumulator >= 1 && iIdx < totalIntel) {
+          masterItems.push(intelligencePool[iIdx++]);
+          intelAccumulator -= 1;
+        }
+      } else {
+        // Fallback for any leftovers
+        masterItems.push(intelligencePool[iIdx++]);
       }
     }
   }
+
+  // 5. MANUAL COLUMN DISTRIBUTION (FOR COMMON BASELINE)
+  const numCols = Math.min(uniqueArticles.length || 1, 4);
+  const columns = Array.from({ length: numCols }, () => []);
+  
+  // High-fidelity distribution: Item 0 -> Col 1, Item 1 -> Col 2... 
+  // This ensures a horizontal "spread" of content types.
+  masterItems.forEach((item, idx) => {
+    columns[idx % numCols].push(item);
+  });
 
   return (
     <div className="broadsheet-wrapper" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
@@ -111,23 +127,31 @@ export default async function Home() {
         <h1 style={{ fontSize: '3.5rem', marginTop: 0, marginBottom: '0.5rem' }}>Top News & Reports</h1>
       </div>
 
-      <div className="article-grid" style={{ columnCount: Math.min(masterItems.filter(i => i.type === 'article').length || 1, 4) }}>
-        {masterItems.length === 0 ? (
-          <div className="empty-state" style={{ columnSpan: 'all', textAlign: 'center', padding: '5rem 0' }}>
+      {masterItems.length === 0 ? (
+        <div className="article-grid" style={{ display: 'block' }}>
+          <div className="empty-state" style={{ textAlign: 'center', padding: '5rem 0' }}>
             <p style={{ fontSize: '1.2rem', fontStyle: 'italic' }}>The autonomous newsroom is currently gathering intelligence...</p>
           </div>
-        ) : (
-          masterItems.map((item, idx) => (
-            <div key={idx} style={{ breakInside: 'avoid', marginBottom: '1.5rem' }}>
-              {item.type === 'article' ? (
-                <ArticleCard article={item.data} />
-              ) : (
-                <IntelligenceCard type={item.type} data={item.data} />
-              )}
+        </div>
+      ) : (
+        <div className="article-grid-flex">
+          {columns.map((colItems, colIdx) => (
+            <div key={colIdx} className="article-column">
+              {colItems.map((item, idx) => (
+                <div key={idx} className="grid-item-wrapper">
+                  {item.type === 'article' ? (
+                    <ArticleCard article={item.data} />
+                  ) : (
+                    <IntelligenceCard type={item.type} data={item.data} />
+                  )}
+                </div>
+              ))}
+              {/* This "pusher" ensures columns with few items still align titles at the top, 
+                  but we'll use justify-content in CSS for the true baseline. */}
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
