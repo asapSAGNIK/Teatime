@@ -75,56 +75,29 @@ export default async function Home() {
     intelligencePool.push({ type: 'niche', data: n });
   });
 
-  // Shuffle the pools once to get internal variety
-  intelligencePool.sort(() => Math.random() - 0.5);
-
-  // 4. BALANCED DISTRIBUTION GRID (SPREADING BOXES EVERYWHERE)
+  // 4. CRISP DISTRIBUTION (SPREADING SMALL BOXES)
   let masterItems = [];
   
-  // Calculate a dynamic interval so Intelligence is spread throughout, not clumped.
-  const totalArticles = articlesPool.length;
-  const totalIntel = intelligencePool.length;
-  const totalItems = totalArticles + totalIntel;
-  const interval = totalIntel > 0 ? Math.floor(totalArticles / totalIntel) : 0;
-
+  // Use a dense interleave to keep it crisp. 3 articles, 1 box.
   let aIdx = 0;
   let iIdx = 0;
   
-  while (aIdx < totalArticles || iIdx < totalIntel) {
-    // Add 'interval' articles, then 1 intel card
-    for (let j = 0; j < interval && aIdx < totalArticles; j++) {
-      masterItems.push(articlesPool[aIdx++]);
-    }
-    if (iIdx < totalIntel) {
-      masterItems.push(intelligencePool[iIdx++]);
-    }
-    // Safety for leftover articles
-    if (iIdx === totalIntel && aIdx < totalArticles) {
-      masterItems.push(articlesPool[aIdx++]);
-    }
-  }
-
-  // 5. FILL THE GRID (ELIMINATE BOTTOM WHITE SPACE)
-  // Ensure the grid is a perfect rectangle by padding the array to a multiple of 4
-  const cols = 4;
-  const remainder = masterItems.length % cols;
-  if (remainder !== 0) {
-    const paddingNeeded = cols - remainder;
-    for (let p = 0; p < paddingNeeded; p++) {
-      // Add a 'null' or empty placeholder card that still renders a grid border
-      masterItems.push({ type: 'padding', data: null });
-    }
+  while (aIdx < articlesPool.length || iIdx < intelligencePool.length) {
+    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
+    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
+    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
+    if (iIdx < intelligencePool.length) masterItems.push(intelligencePool[iIdx++]);
   }
 
   return (
     <div className="broadsheet-wrapper" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
-      <div className="section-title" style={{ textAlign: 'center', marginBottom: 0, paddingBottom: '0.2rem' }}>
+      <div className="section-title" style={{ textAlign: 'center', marginBottom: '1rem', paddingBottom: '0.2rem' }}>
         <h1 style={{ fontSize: '3.5rem', marginTop: 0, marginBottom: '0.5rem' }}>Top News & Reports</h1>
       </div>
 
       <div className="article-grid">
         {masterItems.length === 0 ? (
-          <div className="empty-state" style={{ gridColumn: 'span 4', textAlign: 'center', padding: '5rem 0' }}>
+          <div className="empty-state" style={{ textAlign: 'center', padding: '5rem 0' }}>
             <p style={{ fontSize: '1.2rem', fontStyle: 'italic' }}>The autonomous newsroom is currently gathering intelligence...</p>
           </div>
         ) : (
@@ -134,11 +107,6 @@ export default async function Home() {
               {(item.type === 'trend' || item.type === 'video' || item.type === 'niche') && (
                 <IntelligenceCard type={item.type} data={item.data} />
               )}
-              {item.type === 'padding' && (
-                <div style={{ opacity: 0.3, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '0.8rem', fontStyle: 'italic' }}>Wire signal stable...</span>
-                </div>
-              )}
             </div>
           ))
         )}
@@ -146,4 +114,5 @@ export default async function Home() {
     </div>
   );
 }
+
 

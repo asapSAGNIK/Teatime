@@ -156,26 +156,27 @@ h1, h2, h3, h4, h5 {
   min-width: 0;
 }
 
-/* High-Fidelity Dense Grid — The "Perfect" Newspaper Sheet */
+/* High-Fidelity Dense Newspaper Layout — Text-Well First */
+/* High-Fidelity Gapless Newspaper Sheet — Fully Scrolling */
 .article-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0; /* No gaps between columns for a tight, printed feel */
-  border-top: 1px solid #1a1a1a;
-  border-left: 1px solid #1a1a1a;
+  column-count: 4;
+  column-gap: 1.5rem;
+  column-fill: balance; /* Browser-native perfect baseline alignment */
+  margin-top: 1rem;
+  width: 100%;
 }
 
 .grid-cell {
-  border-right: 1px solid #1a1a1a;
-  border-bottom: 1px solid #1a1a1a;
-  padding: 1.25rem;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  min-height: 480px; /* Uniform height for baseline alignment */
-  overflow: hidden;
-  position: relative;
+  display: block;
+  margin-bottom: 2rem;
+  /* Allow natural flow to the baseline: 
+     Articles can break across columns to fill every pixel, 
+     but we'll keep the Virlo boxes unified. */
 }
+
+
+
+
 
 
 .article-body-columns {
@@ -186,12 +187,10 @@ h1, h2, h3, h4, h5 {
   color: #000;
   text-align: justify;
   /* Fixed Baseline Clamping */
-  display: -webkit-box;
-  -webkit-line-clamp: 10; /* Clamp body text to keep the row aligned */
-  -webkit-box-orient: vertical;
-  line-clamp: 10;
-  overflow: hidden;
-  flex-grow: 1;
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
 }
 
 .article-body-columns p {
@@ -225,15 +224,15 @@ h1, h2, h3, h4, h5 {
 }
 
 .article-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  display: block;
   margin-bottom: 0;
   padding: 0;
   border: none;
   border-radius: 0;
   position: relative;
+  break-inside: auto; /* Allow text to flow across columns to fill the sheet baseline */
 }
+
 
 
 /* Ensure article content doesn't shred */
@@ -329,18 +328,14 @@ h1, h2, h3, h4, h5 {
 
 .article-card h2 {
   font-family: var(--font-playfair), serif;
-  font-size: 1.45rem;
+  font-size: 1.6rem;
   font-weight: 900;
   margin-bottom: 0.5rem;
   margin-top: 0;
   color: #000000;
   line-height: 1.1;
-  /* Clamp headlines to 3 lines max to protect baseline */
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  line-clamp: 3;
-  overflow: hidden;
+  display: block;
+  overflow: visible;
 }
 
 .article-card h2 a:hover {
@@ -739,14 +734,17 @@ footer {
 
 /* Newspaper Blocks for Video / Trending Sidebars */
 .newspaper-block {
-  height: 100%;
-  padding: 0;
-  border: none;
-  background: transparent;
-  margin-bottom: 0;
-  display: flex;
-  flex-direction: column;
+  background-color: transparent;
+  color: var(--paper-text);
+  padding: 1rem;
+  border: 1px solid var(--paper-border);
+  border-top: 4px solid var(--paper-border);
+  height: auto;
+  display: block;
+  margin-bottom: 1.5rem;
 }
+
+
 
 
 .newspaper-block h3, .newspaper-block h4 {
