@@ -112,7 +112,7 @@ export default function ArticleCard({ article }) {
       
       {paragraphs.length > 0 && (
         <div className="article-body-columns">
-          {paragraphs.slice(0, 3).map((para, i) => (
+          {paragraphs.slice(0, 5).map((para, i) => (
             <p key={i} className={i === 0 ? 'drop-cap-para' : ''}>
               {i === 0 ? (
                 <>
@@ -124,7 +124,7 @@ export default function ArticleCard({ article }) {
               )}
             </p>
           ))}
-          {paragraphs.length > 3 && (
+          {paragraphs.length > 5 && (
             <div className="continued-container">
               <Link href={`/article/${slug}`} className="continued-label">
                 CONTINUED.

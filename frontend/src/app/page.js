@@ -53,24 +53,21 @@ export default async function Home() {
   const articlesPool = uniqueArticles.map(a => ({ type: 'article', data: a }));
   const intelligencePool = [];
 
-  // 3. Populate Intelligence Pool (DENSE)
+  // 3. Populate Intelligence Pool (DENSE but NO PLACEHOLDERS)
   const trendData = intelligence.trends || [];
   if (trendData.length > 0) {
     for (let i = 0; i < trendData.length; i += 3) {
-      intelligencePool.push({ type: 'trend', data: trendData.slice(i, i + 3) });
+      const chunk = trendData.slice(i, i + 3);
+      if (chunk.length > 0) {
+        intelligencePool.push({ type: 'trend', data: chunk });
+      }
     }
-  } else {
-    for (let i = 0; i < 3; i++) intelligencePool.push({ type: 'trend', data: [] });
   }
 
-  const combinedVideos = [...(intelligence.instagram || []), ...(intelligence.youtube || [])];
-  if (combinedVideos.length > 0) {
-    combinedVideos.forEach(v => intelligencePool.push({ type: 'video', data: v }));
-  } else {
-    for (let i = 0; i < 3; i++) intelligencePool.push({ type: 'video', data: null });
-  }
+  const combinedVideos = [...(intelligence.instagram || []), ...(intelligence.youtube || [])].filter(v => v && v.thumbnail);
+  combinedVideos.forEach(v => intelligencePool.push({ type: 'video', data: v }));
 
-  const nicheData = intelligence.niches || [];
+  const nicheData = (intelligence.niches || []).filter(n => n && n.name);
   nicheData.slice(0, 4).forEach(n => {
     intelligencePool.push({ type: 'niche', data: n });
   });
@@ -78,22 +75,33 @@ export default async function Home() {
   // Shuffle the pools once to get internal variety
   intelligencePool.sort(() => Math.random() - 0.5);
 
-  // 4. CHECKERBOARD GRID SPREAD (DIVERGING FROM COLUMN CLUMPING)
+  // 4. BALANCED GRID SPREAD (PREVENTS CLUMPING AT BOTTOM)
   let masterItems = [];
-  let aIdx = 0;
-  let iIdx = 0;
   
-  // High-precision interleaving: 2 articles, 1 intel, repeat. 
-  // This pushes intelligence out of the corners and into the early/middle columns.
-  while (aIdx < articlesPool.length || iIdx < intelligencePool.length) {
-    if (aIdx < articlesPool.length) {
-      masterItems.push(articlesPool[aIdx++]);
-    }
-    if (aIdx < articlesPool.length) {
-      masterItems.push(articlesPool[aIdx++]);
-    }
-    if (iIdx < intelligencePool.length) {
-      masterItems.push(intelligencePool[iIdx++]);
+  // If no intel, just use articles
+  if (intelligencePool.length === 0) {
+    masterItems = articlesPool;
+  } else {
+    // We want to sprinkle intel cards evenly through the articles pool
+    const totalArticles = articlesPool.length;
+    const totalIntel = intelligencePool.length;
+    
+    // Calculate interval. e.g. 10 articles, 2 intel -> interval = 5.
+    // Intel at index 2, 7 etc.
+    const interval = Math.max(2, Math.floor(totalArticles / totalIntel));
+    
+    let aPtr = 0;
+    let iPtr = 0;
+    
+    while (aPtr < totalArticles || iPtr < totalIntel) {
+      // Add 'interval' articles
+      for (let count = 0; count < interval && aPtr < totalArticles; count++) {
+        masterItems.push(articlesPool[aPtr++]);
+      }
+      // Add 1 intel card
+      if (iPtr < totalIntel) {
+        masterItems.push(intelligencePool[iPtr++]);
+      }
     }
   }
 

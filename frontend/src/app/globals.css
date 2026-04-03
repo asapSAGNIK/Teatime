@@ -160,9 +160,11 @@ h1, h2, h3, h4, h5 {
 .article-grid {
   display: block;
   column-count: 4;
-  column-gap: 1.25rem;
-  column-rule: none; /* Remove vertical lines */
-  margin-top: 1rem;
+  column-gap: 1.5rem;
+  column-fill: balance;
+  column-rule: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+  width: 100%;
 }
 
 .article-body-columns {
@@ -259,7 +261,7 @@ h1, h2, h3, h4, h5 {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1.5rem;
+  margin-top: 0.75rem;
   padding-top: 0.5rem;
   width: 100%;
 }

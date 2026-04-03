@@ -12,8 +12,8 @@ export default function IntelligenceCard({ type, data }) {
   if (type === 'trend') {
     const hasData = data && data.length > 0;
     return (
-      <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>The Pulse</h4>
+      <div className="newspaper-block intelligence-card">
+        <h4 className="intelligence-label">The Pulse</h4>
         <div className="trending-list">
           {hasData ? (
             data.map((trend, idx) => (
@@ -44,15 +44,15 @@ export default function IntelligenceCard({ type, data }) {
 
   if (type === 'video') {
     if (!data) return (
-      <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
-        <p style={{ ...timesFont, textAlign: 'center', opacity: 0.7, padding: '1rem 0', fontStyle: 'italic' }}>Monitoring global streams...</p>
+      <div className="newspaper-block intelligence-card">
+        <h4 className="intelligence-label">Viral Intelligence</h4>
+        <p style={{ textAlign: 'center', opacity: 0.7, padding: '1rem 0', fontStyle: 'italic' }}>Monitoring global streams...</p>
       </div>
     );
 
     return (
-      <div className="newspaper-block intelligence-card" style={timesFont}>
-        <h4 className="intelligence-label" style={{ ...timesFont, borderBottom: '2px solid #000', paddingBottom: '4px', marginBottom: '1rem', textTransform: 'uppercase', fontSize: '1.2rem', textAlign: 'left', fontWeight: 'bold' }}>Viral Intelligence</h4>
+      <div className="newspaper-block intelligence-card">
+        <h4 className="intelligence-label">Viral Intelligence</h4>
         <div className="viral-card-content" style={{ border: '1px solid #000', padding: '4px' }}>
           {data.thumbnail && (
             <img
@@ -77,11 +77,11 @@ export default function IntelligenceCard({ type, data }) {
   if (type === 'niche') {
     if (!data) return null;
     return (
-        <div className="newspaper-block intelligence-card" style={{ border: '1px solid #000', padding: '1rem', ...timesFont }}>
-            <h4 style={{ ...timesFont, margin: 0, fontSize: '0.8rem', opacity: 0.6, textTransform: 'uppercase' }}>Niche Bulletin</h4>
-            <h3 style={{ ...timesFont, margin: '0.5rem 0', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 'bold', borderBottom: '1px solid #000' }}>{data.name}</h3>
-            <p style={{ ...timesFont, fontSize: '0.8rem', marginTop: '0.5rem' }}>Active Pulse Reports: {data.report_count || 0}</p>
-        </div>
+      <div className="newspaper-block intelligence-card">
+        <h4 className="intelligence-label">Niche Bulletin</h4>
+        <h3 style={{ margin: '0.5rem 0', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 'bold', border: 'none', borderBottom: '1px solid #000' }}>{data.name}</h3>
+        <p style={{ fontSize: '0.9rem', marginTop: '0.5rem', fontStyle: 'italic' }}>Active Pulse Reports: {data.report_count || 0}</p>
+      </div>
     );
   }
 
