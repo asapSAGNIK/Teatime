@@ -94,8 +94,15 @@ export default function ArticleCard({ article }) {
     }
   };
 
+  // Granular News Depth: 300 to 1500 chars 
+  // We need a wider variety of sizes to help the Masonry engine fill the "bottom right" holes.
+  const fullText = paragraphs.join(' ');
+  const granularLimit = 300 + (slug.length * 37) % 1200; 
+  const lastStop = fullText.lastIndexOf('.', granularLimit);
+  const snippet = lastStop > 250 ? fullText.slice(0, lastStop + 1) : fullText.slice(0, granularLimit);
+
   return (
-    <article className="article-card group" style={{ position: 'relative' }}>
+    <article className="article-card" style={{ marginBottom: '1rem', display: 'block', width: '100%' }}>
       <button 
         onClick={handleCopy}
         className="copy-capsule"
@@ -104,35 +111,23 @@ export default function ArticleCard({ article }) {
         {copied ? 'COPIED' : 'COPY'}
       </button>
 
-      <div className="article-card-header">
-        <span className="article-category">{category}</span>
-        <h2>{headline}</h2>
-        {subtitle ? <p className="newspaper-lede">{subtitle}</p> : null}
+      <div className="article-card-header" style={{ marginBottom: '0.6rem' }}>
+        <span className="article-category" style={{ fontSize: '0.7rem', opacity: 0.7 }}>{category}</span>
+        <h2 style={{ fontSize: '1.7rem', lineHeight: '1', margin: '0.1rem 0' }}>{headline}</h2>
+        {subtitle && <p className="newspaper-lede" style={{ fontSize: '0.95rem', lineHeight: '1.2', margin: '0.2rem 0', opacity: 0.85 }}>{subtitle}</p>}
       </div>
       
-      {paragraphs.length > 0 && (
-        <div className="article-body-columns">
-          {paragraphs.slice(0, 3).map((para, i) => (
-            <p key={i} className={i === 0 ? 'drop-cap-para' : ''}>
-              {i === 0 ? (
-                <>
-                  <span className="drop-cap-letter">{para.charAt(0)}</span>
-                  {para.slice(1)}
-                </>
-              ) : (
-                para
-              )}
-            </p>
-          ))}
-          <div className="continued-container" style={{ marginTop: '0.4rem' }}>
-            {paragraphs.length > 3 && (
-                <Link href={`/article/${slug}`} className="continued-label">
-                    CONTINUED.
-                </Link>
-            )}
-          </div>
+      <div className="article-body-columns">
+        <div style={{ fontSize: '1.05rem', lineHeight: '1.3', textAlign: 'justify', hyphens: 'auto' }}>
+          <span className="drop-cap-letter">{snippet.charAt(0)}</span>
+          {snippet.slice(1)}
         </div>
-      )}
+        <div style={{ marginTop: '0.8rem', textAlign: 'center' }}>
+            <Link href={`/article/${slug}`} className="continued-label" style={{ fontWeight: '900', fontSize: '0.8rem', letterSpacing: '1px' }}>
+                CONTINUED.
+            </Link>
+        </div>
+      </div>
     </article>
 
 

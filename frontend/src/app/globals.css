@@ -156,30 +156,20 @@ h1, h2, h3, h4, h5 {
   min-width: 0;
 }
 
-/* High-Fidelity Dense Newspaper Layout — Text-Well First */
-/* High-Fidelity Master Newspaper Sheet — Fluid Ink Flow */
+/* High-Fidelity Professional News-Well — Production-Stable Masonry */
 .article-grid {
+  display: block;
   column-count: 4;
   column-gap: 1.5rem;
-  column-fill: balance; /* Browser-native perfect baseline alignment */
-  margin-top: 1rem;
+  column-fill: balance;
   width: 100%;
-  text-align: justify;
-  hyphens: auto;
 }
 
 .grid-cell {
   display: block;
-  margin-bottom: 2rem;
-  /* Articles SHRED across columns to fill every pixel. 
-     Virlo monitors stay SOLID. */
-}
-
-/* Ensure monitors don't split across columns */
-.newspaper-block {
   break-inside: avoid;
   page-break-inside: avoid;
-  -webkit-column-break-inside: avoid;
+  margin-bottom: 0.8rem; /* Tight news density */
 }
 
 
@@ -369,21 +359,9 @@ h1, h2, h3, h4, h5 {
   display: none;
 }
 
-@media (max-width: 1200px) {
-  .article-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (max-width: 900px) {
-  .article-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-
 @media (max-width: 600px) {
   .article-grid {
-    column-count: 1;
-    column-rule: none;
+    grid-template-columns: 1fr;
   }
 }
 

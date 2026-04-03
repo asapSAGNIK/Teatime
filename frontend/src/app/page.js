@@ -5,7 +5,7 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://127.0.0.1:8000';
 
 async function getArticles() {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/articles?limit=25`, { cache: 'no-store' });
+    const res = await fetch(`${BACKEND_URL}/api/articles?limit=50`, { cache: 'no-store' });
     if (!res.ok) return [];
     return await res.json();
   } catch (e) {
@@ -76,17 +76,18 @@ export default async function Home() {
     intelligencePool.push({ type: 'niche', data: n });
   });
 
-  // 4. BALANCED MASTER LIST
+  // 3. THE MASTER ALIGN FLOW (Stable & Deterministic - No Hydration Errors)
   let masterItems = [];
-  let aIdx = 0;
-  let iIdx = 0;
+  const articleStack = [...articlesPool];
+  const intelStack = [...intelligencePool];
 
-  // Interleave 1 monitor every 3-4 articles
-  while (aIdx < articlesPool.length || iIdx < intelligencePool.length) {
-    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
-    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
-    if (aIdx < articlesPool.length) masterItems.push(articlesPool[aIdx++]);
-    if (iIdx < intelligencePool.length) masterItems.push(intelligencePool[iIdx++]);
+  // Requirement 3: Top-Left Attraction Box
+  if (intelStack.length > 0) masterItems.push(intelStack.shift());
+
+  while (articleStack.length > 0 || intelStack.length > 0) {
+    if (articleStack.length > 0) masterItems.push(articleStack.shift());
+    if (articleStack.length > 0) masterItems.push(articleStack.shift());
+    if (intelStack.length > 0) masterItems.push(intelStack.shift());
   }
 
   return (
@@ -97,18 +98,21 @@ export default async function Home() {
 
       <div className="article-grid">
         {masterItems.length === 0 ? (
-          <div className="empty-state" style={{ textAlign: 'center', padding: '5rem 0' }}>
+          <div className="empty-state" style={{ textAlign: 'center', padding: '5rem 0', width: '100%' }}>
             <p style={{ fontSize: '1.2rem', fontStyle: 'italic' }}>The autonomous newsroom is currently gathering intelligence...</p>
           </div>
         ) : (
-          masterItems.map((item, idx) => (
-            <div key={idx} className="grid-cell">
-              {item.type === 'article' && <ArticleCard article={item.data} />}
-              {(item.type === 'trend' || item.type === 'video' || item.type === 'niche') && (
-                <IntelligenceCard type={item.type} data={item.data} />
-              )}
-            </div>
-          ))
+          masterItems.map((item, idx) => {
+            const stableKey = item.type === 'article' ? `a-${item.data.slug}` : `i-${idx}`;
+            return (
+              <div key={stableKey} className="grid-cell">
+                {item.type === 'article' && <ArticleCard article={item.data} />}
+                {(item.type === 'trend' || item.type === 'video' || item.type === 'niche') && (
+                  <IntelligenceCard type={item.type} data={item.data} />
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
