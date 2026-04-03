@@ -112,7 +112,7 @@ export default function ArticleCard({ article }) {
       
       {paragraphs.length > 0 && (
         <div className="article-body-columns">
-          {paragraphs.map((para, i) => (
+          {paragraphs.slice(0, 3).map((para, i) => (
             <p key={i} className={i === 0 ? 'drop-cap-para' : ''}>
               {i === 0 ? (
                 <>
@@ -124,6 +124,13 @@ export default function ArticleCard({ article }) {
               )}
             </p>
           ))}
+          {paragraphs.length > 3 && (
+            <div style={{ textAlign: 'center', marginTop: '1rem', borderTop: '1px solid #ddd', paddingTop: '0.5rem' }}>
+              <Link href={`/article/${slug}`} style={{ fontStyle: 'italic', fontSize: '0.9rem', fontWeight: 'bold' }}>
+                CONTINUED ON PAGE 2 →
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </article>
