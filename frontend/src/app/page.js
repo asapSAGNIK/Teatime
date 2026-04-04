@@ -5,7 +5,7 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://127.0.0.1:8000';
 
 async function getArticles() {
   try {
-    const res = await fetch(`${BACKEND_URL}/api/articles?limit=50`, { cache: 'no-store' });
+    const res = await fetch(`${BACKEND_URL}/api/articles?limit=10`, { cache: 'no-store' });
     if (!res.ok) return [];
     return await res.json();
   } catch (e) {
