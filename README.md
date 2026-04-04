@@ -1,11 +1,18 @@
 # The Teatime: Autonomous AI-Native Newsroom
 **Created for Vibeathon 2026**
 
-The Teatime is an experimental, autonomous news service that eliminates human editors. It uses a high-intelligence AI pipeline (Llama 3.3 70B) to discover, research, write, and verify news stories in real-time based on global social and search trends.
+The Teatime is an experimental, autonomous news service that eliminates human editors. It uses a high-intelligence AI pipeline (Llama 3.3 70B) to discover, research, write, and verify news stories in real-time based on global social and search trends. 
+
+These are the screenshots with the working virlo API:
+<img width="1886" height="940" alt="image" src="https://github.com/user-attachments/assets/d8a9690b-5beb-4455-ae3f-f829c6226734" />
+<img width="1897" height="960" alt="image" src="https://github.com/user-attachments/assets/50f6d78b-41d4-4232-a46b-fd3eb2ef8a03" />
+
+
+
 
 ---
 
-## 🛰️ Virlo Intelligence Engine
+##  Virlo Intelligence Engine
 The "soul" of The Teatime is its integration with the **Virlo.ai** intelligence cloud. We treat social trends as the primary signal for "what matters."
 
 ### What we fetch from Virlo:
@@ -16,7 +23,7 @@ The "soul" of The Teatime is its integration with the **Virlo.ai** intelligence 
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 -   **Frontend:** Next.js 14 (App Router), Vanilla CSS, responsive Broadsheet masonry layout.
 -   **Backend:** FastAPI (Python 3.10+), SQLite with `aiosqlite`.
 -   **Editorial Engine:** Llama 3.3 70B (via Groq API) with custom XML-based parsing for 100% stable article generation.
@@ -24,7 +31,7 @@ The "soul" of The Teatime is its integration with the **Virlo.ai** intelligence 
 
 ---
 
-## 🚀 Deployment Guide
+##  Deployment Guide
 
 ### 1. Backend (FastAPI)
 1.  Navigate to `/backend`.
@@ -42,7 +49,7 @@ The "soul" of The Teatime is its integration with the **Virlo.ai** intelligence 
 
 ---
 
-## 🧱 The Pipeline Architecture
+##  The Pipeline Architecture
 The Teatime doesn't just "scrape"—it thinks. Every 2 hours, the **Autonomous Pipeline** cycles through:
 1.  **Discovery:** Fetches Virlo trends and RSS signals.
 2.  **Cleaning:** Purges articles older than 24h to keep the "paper" fresh.
