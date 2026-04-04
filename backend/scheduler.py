@@ -26,7 +26,7 @@ async def pipeline_job():
     except Exception as e:
         print(f"-> Trends sync failed: {e}")
 
-    top_stories = await run_discovery(max_stories=5)
+    top_stories = await run_discovery(max_stories=10)
     print(f"Discovered {len(top_stories)} stories to cover.")
 
     # Fetch recently published headlines for final cross-check
@@ -57,8 +57,9 @@ async def pipeline_job():
                 print(f"⚠️ Writer could not produce a quality report for '{story.title}'. Skipping...")
                 continue
 
-            print(f"-> Editing: {draft.headline}")
-            final_article = await run_editor_pass(draft)
+            # print(f"-> Editing: {draft.headline}")
+            # final_article = await run_editor_pass(draft)
+            final_article = draft
 
             final_article.source_urls = [story.source_url]
 
@@ -66,8 +67,8 @@ async def pipeline_job():
             await create_article(final_article)
             written += 1
 
-            # Brief pause to respect API rate limits
-            await asyncio.sleep(2)
+            # Defensive pause for TPM management
+            await asyncio.sleep(10)
         except Exception as e:
             print(f"Failed to process '{story.title}': {e}")
 

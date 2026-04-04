@@ -5,7 +5,7 @@ from models.schemas import ResearchBrief, ArticleCreate
 from config import settings
 from pipeline.prompts import WRITER_SYSTEM_PROMPT
 
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 groq_client = Groq(api_key=settings.GROQ_API_KEY) if settings.GROQ_API_KEY else None
 
