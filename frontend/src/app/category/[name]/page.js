@@ -38,12 +38,6 @@ export default async function CategoryPage({ params }) {
 
   return (
     <div className="broadsheet-wrapper">
-      {/* 50/50 Intelligence Dash at the Top */}
-      <div className="intelligence-banner">
-        <VideoSidebar videos={trending.videos || []} />
-        <TrendSidebar trends={trending.trends || []} />
-      </div>
-
       <div className="section-title section-title--newsprint">
         <h1>{decodedCategory} Intelligence</h1>
       </div>
@@ -60,6 +54,12 @@ export default async function CategoryPage({ params }) {
           ))}
         </div>
       )}
+
+      {/* 50/50 Intelligence Dash moved to the Bottom */}
+      <div className="intelligence-banner">
+        <VideoSidebar videos={trending.videos || []} />
+        <TrendSidebar trends={trending.trends || []} />
+      </div>
     </div>
   );
 }

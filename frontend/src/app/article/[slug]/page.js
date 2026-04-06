@@ -50,12 +50,6 @@ export default async function ArticlePage({ params }) {
 
   return (
     <article className="article-detail">
-      {/* Side-by-side Intelligence Banner */}
-      <div className="intelligence-banner">
-        <VideoSidebar videos={trending.videos || []} />
-        <TrendSidebar trends={trending.trends || []} />
-      </div>
-
       <header className="article-header">
         <span className="article-category article-category--large">{article.category}</span>
         <h1>{article.headline}</h1>
@@ -87,6 +81,12 @@ export default async function ArticlePage({ params }) {
             <p key={i}>{para.replace(/\*\*/g, '')}</p>
           )
         ))}
+      </div>
+
+      {/* Side-by-side Intelligence Banner */}
+      <div className="intelligence-banner">
+        <VideoSidebar videos={trending.videos || []} />
+        <TrendSidebar trends={trending.trends || []} />
       </div>
     </article>
   );

@@ -26,20 +26,20 @@ async function getTrending() {
 
 export default async function Home() {
   const [articles, intelligence] = await Promise.all([getArticles(), getTrending()]);
-  
+
   // 1. Smarter Deduplication (Fuzzy Word Overlap)
   const seenHeadlineSets = [];
   const uniqueArticles = articles.filter(a => {
     const title = (a.headline || '').toLowerCase().trim();
     const words = new Set(title.replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3)); // skip small words
-    
+
     for (const seenWords of seenHeadlineSets) {
       let intersection = 0;
       for (const w of words) {
         if (seenWords.has(w)) intersection++;
       }
       const unionSize = new Set([...words, ...seenWords]).size;
-      
+
       // Looser overlap (0.7) to keep the paper full and avoid 'muting' news
       if (unionSize > 0 && (intersection / unionSize) > 0.7) {
         return false;
