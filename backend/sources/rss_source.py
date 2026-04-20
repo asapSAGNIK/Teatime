@@ -35,12 +35,25 @@ async def fetch_rss_stories() -> List[RawStory]:
             try:
                 feed = feedparser.parse(feed_url)
                 for entry in feed.entries[:5]:
+                    # Attempt to extract image
+                    image_url = None
+                    if "media_content" in entry and len(entry.media_content) > 0:
+                        image_url = entry.media_content[0].get("url")
+                    elif "media_thumbnail" in entry and len(entry.media_thumbnail) > 0:
+                        image_url = entry.media_thumbnail[0].get("url")
+                    elif "links" in entry:
+                        for link in entry.links:
+                            if "image" in link.get("type", ""):
+                                image_url = link.get("href")
+                                break
+                    
                     story = RawStory(
                         title=entry.get("title", ""),
                         summary=entry.get("summary", entry.get("description", "")),
                         source_url=entry.get("link", ""),
                         published_date=entry.get("published", None),
                         category=category,
+                        image_url=image_url
                     )
                     stories.append(story)
             except Exception as e:

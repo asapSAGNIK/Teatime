@@ -1,13 +1,11 @@
 import httpx
+import feedparser
 from fastapi import APIRouter
 from config import settings
 
 from database.crud import get_trending_cache, update_trending_cache
 
 router = APIRouter()
-
-VIRLO_BASE_URL = "https://api.virlo.ai/v1"
-
 
 @router.get("/trending")
 async def get_trending():
@@ -20,11 +18,7 @@ async def get_trending():
 
 
 async def sync_trending_data():
-    """Background task to fetch fresh data from Virlo and update the cache."""
-    if not settings.VIRLO_API_KEY:
-        return
-
-    headers = {"Authorization": f"Bearer {settings.VIRLO_API_KEY}"}
+    """Background task to fetch fresh data from free APIs and update the cache."""
     result = {
         "trends": [],
         "niches": [],
@@ -34,52 +28,86 @@ async def sync_trending_data():
         "videos": []
     }
 
-    async with httpx.AsyncClient(timeout=20) as client:
-        # 1. FETCH TRENDS
-        try:
-            tres = await client.get(f"{VIRLO_BASE_URL}/trends/digest", headers=headers)
-            if tres.status_code == 200:
-                data = tres.json().get("data", [])
-                for group in data:
-                    for entry in group.get("trends", []):
-                        trend = entry.get("trend", {})
-                        if trend.get("name"):
-                            result["trends"].append({
-                                "name": trend["name"],
-                                "description": trend.get("description", ""),
-                                "ranking": entry.get("ranking", 0),
-                            })
-        except Exception: pass
+    # 1. FETCH TRENDS (Google Trends RSS)
+    try:
+        feed = feedparser.parse("https://trends.google.com/trending/rss?geo=US")
+        for i, entry in enumerate(feed.entries[:5]): # Top 5 trends
+            desc = getattr(entry, 'ht_news_item_snippet', entry.get("summary", ""))
+            if not desc:
+                desc = entry.get("summary", "")
+            
+            # Map image if exists
+            image_url = None
+            if hasattr(entry, 'ht_picture'):
+                image_url = entry.ht_picture
 
-        # 2. FETCH NICHES
-        try:
-            nres = await client.get(f"{VIRLO_BASE_URL}/niches", headers=headers)
-            if nres.status_code == 200:
-                result["niches"] = nres.json().get("data", [])[:10]
-        except Exception: pass
+            result["trends"].append({
+                "name": entry.title,
+                "description": desc,
+                "ranking": i + 1,
+                "image": image_url
+            })
+    except Exception as e:
+        print(f"Failed to fetch Google Trends: {e}")
 
-        # 3. FETCH SOCIALS
-        platforms = ["instagram", "youtube"]
-        for platform in platforms:
-            try:
-                pres = await client.get(f"{VIRLO_BASE_URL}/{platform}/videos/digest", 
-                                        headers=headers, params={"limit": 5})
-                if pres.status_code == 200:
-                    vids = pres.json().get("data", [])
+    # 2. FETCH NICHES (Reddit r/news Hot JSON) - acts as our bulletin
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            res = await client.get(
+                "https://www.reddit.com/r/news/hot.json?limit=5",
+                headers={"User-Agent": "AetherNews/1.0"}
+            )
+            if res.status_code == 200:
+                data = res.json().get("data", {}).get("children", [])
+                for item in data:
+                    post = item.get("data", {})
+                    name = post.get("title", "")
+                    # Reddit uses upvotes which Maps to report_count in our UI
+                    result["niches"].append({
+                        "name": name,
+                        "report_count": post.get("ups", 0)
+                    })
+    except Exception as e:
+        print(f"Failed to fetch Reddit Niches: {e}")
+
+    # 3. FETCH SOCIALS (YouTube Data API - Most Popular)
+    if settings.YOUTUBE_API_KEY:
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                res = await client.get(
+                    "https://www.googleapis.com/youtube/v3/videos",
+                    params={
+                        "part": "snippet,statistics",
+                        "chart": "mostPopular",
+                        "regionCode": "US",
+                        "maxResults": 5,
+                        "key": settings.YOUTUBE_API_KEY
+                    }
+                )
+                if res.status_code == 200:
+                    items = res.json().get("items", [])
                     processed = []
-                    for v in vids:
-                        item = {
-                            "url": v.get("url", ""),
-                            "description": v.get("description", ""),
-                            "views": v.get("views", 0),
-                            "thumbnail": v.get("thumbnail_url", ""),
-                            "platform": platform,
-                            "likes": v.get("number_of_likes", 0)
-                        }
-                        processed.append(item)
-                    result[platform] = processed
+                    for v in items:
+                        snippet = v.get("snippet", {})
+                        stats = v.get("statistics", {})
+                        
+                        thumbs = snippet.get("thumbnails", {})
+                        thumbnail_url = thumbs.get("high", {}).get("url", "")
+                        if not thumbnail_url:
+                            thumbnail_url = thumbs.get("default", {}).get("url", "")
+                            
+                        processed.append({
+                            "url": f"https://www.youtube.com/watch?v={v.get('id')}",
+                            "description": snippet.get("title", ""),
+                            "views": int(stats.get("viewCount", 0)),
+                            "thumbnail": thumbnail_url,
+                            "platform": "youtube",
+                            "likes": int(stats.get("likeCount", 0))
+                        })
+                    result["youtube"] = processed
                     result["videos"].extend(processed)
-            except Exception: pass
+        except Exception as e:
+            print(f"Failed to fetch YouTube videos: {e}")
 
     # Update the database cache with results
     await update_trending_cache(result)

@@ -9,6 +9,7 @@ class RawStory(BaseModel):
     published_date: Optional[str] = None
     category: str
     virlo_data: Optional[dict] = None  # Store social metrics here
+    image_url: Optional[str] = None
 
 class ResearchBrief(BaseModel):
     title: str
@@ -16,6 +17,7 @@ class ResearchBrief(BaseModel):
     perspectives: List[str]
     social_context: Optional[dict] = None
     category: str
+    image_url: Optional[str] = None
 
 class ArticleCreate(BaseModel):
     headline: str

@@ -67,6 +67,7 @@ async def write_article(brief: ResearchBrief) -> Optional[ArticleCreate]:
             category=brief.category,
             tags=[],
             read_time=r_time,
+            image_url=brief.image_url,
             source_urls=[],
             virlo_data=brief.social_context,
         )

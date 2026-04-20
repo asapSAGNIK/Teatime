@@ -18,4 +18,5 @@ async def research_story(story: RawStory) -> ResearchBrief:
         perspectives=[],
         social_context=story.virlo_data,
         category=story.category,
+        image_url=story.image_url,
     )
