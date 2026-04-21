@@ -109,6 +109,25 @@ export default function IntelligenceCard({ type, data }) {
     );
   }
 
+  if (type === 'markets') {
+    if (!data || data.length === 0) return null;
+    return (
+      <div className="newspaper-block" style={timesFont}>
+        <h4 style={{ ...timesFont, borderBottom: '2px double #000', paddingBottom: '2px', marginBottom: '0.6rem', textTransform: 'uppercase', fontSize: '1rem', textAlign: 'center', fontWeight: 'bold' }}>Market Ticker</h4>
+        <div className="market-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+          {data.map((m, idx) => (
+            <div key={idx} style={{ borderBottom: '1px dotted #000', padding: '2px 0' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{m.symbol}</div>
+              <div style={{ fontSize: '0.8rem', color: m.change?.startsWith('-') ? '#c00' : '#060' }}>
+                {parseFloat(m.price).toFixed(2)} ({m.change_percent})
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
 
   return null;
 }

@@ -19,7 +19,7 @@ async def get_trending():
     if cached:
         return cached
     # Fallback to empty structure if nothing cached yet
-    return {"trends": [], "niches": [], "instagram": [], "youtube": [], "creators": [], "videos": [], "weather": {}}
+    return {"trends": [], "niches": [], "instagram": [], "youtube": [], "creators": [], "videos": [], "weather": {}, "markets": []}
 
 
 async def sync_trending_data():
@@ -31,16 +31,15 @@ async def sync_trending_data():
         "youtube": [],
         "creators": [],
         "videos": [],
-        "weather": {}
+        "weather": {},
+        "markets": []
     }
 
-    # 1. FETCH TRENDS -> Switch to Google News RSS for actual news
+    # 1. FETCH TRENDS (Google News RSS)
     try:
-        # Use Google News Top Stories RSS
         feed = feedparser.parse("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en")
-        for i, entry in enumerate(feed.entries[:5]): # Top 5 headlines
+        for i, entry in enumerate(feed.entries[:5]):
             desc = clean_html(entry.get("summary", ""))
-            # Keep it concise
             if len(desc) > 150:
                 desc = desc[:147] + "..."
                 
@@ -53,7 +52,7 @@ async def sync_trending_data():
     except Exception as e:
         print(f"Failed to fetch Google News: {e}")
 
-    # 2. FETCH NICHES -> Multi-subreddit Reddit (worldnews, technology, politics)
+    # 2. FETCH NICHES (Reddit r/news etc)
     subreddits = ["worldnews", "technology", "politics"]
     try:
         async with httpx.AsyncClient(timeout=15) as client:
@@ -73,7 +72,33 @@ async def sync_trending_data():
     except Exception as e:
         print(f"Failed to fetch Reddit Niches: {e}")
 
-    # 3. FETCH SOCIALS -> YouTube Data API Filtered to News & Politics (Category 25)
+    # 3. FETCH MARKETS (Alpha Vantage)
+    if settings.ALPHAVANTAGE_API_KEY:
+        symbols = ["IBM", "AAPL", "DIA", "TSLA"] # Using some defaults for market signal
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                for symbol in symbols:
+                    mres = await client.get(
+                        "https://www.alphavantage.co/query",
+                        params={
+                            "function": "GLOBAL_QUOTE",
+                            "symbol": symbol,
+                            "apikey": settings.ALPHAVANTAGE_API_KEY
+                        }
+                    )
+                    if mres.status_code == 200:
+                        quote = mres.json().get("Global Quote", {})
+                        if quote:
+                            result["markets"].append({
+                                "symbol": quote.get("01. symbol"),
+                                "price": quote.get("05. price"),
+                                "change": quote.get("09. change"),
+                                "change_percent": quote.get("10. change percent")
+                            })
+        except Exception as e:
+            print(f"Markets fetch failed: {e}")
+
+    # 4. FETCH SOCIALS (YouTube Category 25)
     if settings.YOUTUBE_API_KEY:
         try:
             async with httpx.AsyncClient(timeout=15) as client:
@@ -83,7 +108,7 @@ async def sync_trending_data():
                         "part": "snippet,statistics",
                         "chart": "mostPopular",
                         "regionCode": "US",
-                        "videoCategoryId": "25", # NEWS & POLITICS CATEGORY
+                        "videoCategoryId": "25",
                         "maxResults": 5,
                         "key": settings.YOUTUBE_API_KEY
                     }
@@ -94,10 +119,8 @@ async def sync_trending_data():
                     for v in items:
                         snippet = v.get("snippet", {})
                         stats = v.get("statistics", {})
-                        
                         thumbs = snippet.get("thumbnails", {})
                         thumbnail_url = thumbs.get("high", {}).get("url", "") or thumbs.get("default", {}).get("url", "")
-                            
                         processed.append({
                             "url": f"https://www.youtube.com/watch?v={v.get('id')}",
                             "description": snippet.get("title", ""),
@@ -111,16 +134,14 @@ async def sync_trending_data():
         except Exception as e:
             print(f"Failed to fetch YouTube videos: {e}")
 
-    # 4. WEATHER DESK (Open-Meteo) 
+    # 5. WEATHER DESK
     try:
         async with httpx.AsyncClient(timeout=10) as client:
-            # Fetch for NYC as a default/global signal
             res = await client.get("https://api.open-meteo.com/v1/forecast?latitude=40.71&longitude=-74.01&current_weather=true")
             if res.status_code == 200:
                 cw = res.json().get("current_weather", {})
                 result["weather"] = {
                     "temp": cw.get("temperature"),
-                    "code": cw.get("weathercode"), # To map to icons later
                     "city": "NEWSROOM (NY)"
                 }
     except Exception as e:

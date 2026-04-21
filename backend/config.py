@@ -9,6 +9,9 @@ class Settings:
     # GROQ IS THE ONLY ENGINE
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     YOUTUBE_API_KEY: str = os.getenv("YOUTUBE_API_KEY", "")
+    GUARDIAN_API_KEY: str = os.getenv("GUARDIAN_API_KEY", "")
+    NEWS_API_KEY: str = os.getenv("NEWS_API_KEY", "")
+    ALPHAVANTAGE_API_KEY: str = os.getenv("ALPHAVANTAGE_API_KEY", "")
 
 
 settings = Settings()

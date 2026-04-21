@@ -17,10 +17,10 @@ async function getArticles() {
 async function getTrending() {
   try {
     const res = await fetch(`${BACKEND_URL}/api/trending`, { cache: 'no-store' });
-    if (!res.ok) return { trends: [], niches: [], instagram: [], youtube: [], videos: [], weather: {} };
+    if (!res.ok) return { trends: [], niches: [], instagram: [], youtube: [], videos: [], weather: {}, markets: [] };
     return await res.json();
   } catch (e) {
-    return { trends: [], niches: [], instagram: [], youtube: [], videos: [], weather: {} };
+    return { trends: [], niches: [], instagram: [], youtube: [], videos: [], weather: {}, markets: [] };
   }
 }
 
@@ -81,6 +81,11 @@ export default async function Home() {
     intelligencePool.push({ type: 'weather', data: intelligence.weather });
   }
 
+  // Inject Markets Card (High Priority)
+  if (intelligence.markets && intelligence.markets.length > 0) {
+    intelligencePool.unshift({ type: 'markets', data: intelligence.markets });
+  }
+
   // 3. THE MASTER ALIGN FLOW (Stable & Deterministic - No Hydration Errors)
   let masterItems = [];
   const articleStack = [...articlesPool];
@@ -112,7 +117,7 @@ export default async function Home() {
             return (
               <div key={stableKey} className="grid-cell">
                 {item.type === 'article' && <ArticleCard article={item.data} />}
-                {(item.type === 'trend' || item.type === 'video' || item.type === 'niche' || item.type === 'weather') && (
+                {(item.type === 'trend' || item.type === 'video' || item.type === 'niche' || item.type === 'weather' || item.type === 'markets') && (
                   <IntelligenceCard type={item.type} data={item.data} />
                 )}
               </div>
