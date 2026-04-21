@@ -92,6 +92,19 @@ export default function IntelligenceCard({ type, data }) {
     );
   }
 
+  if (type === 'weather') {
+    if (!data || !data.temp) return null;
+    return (
+      <div className="newspaper-block" style={{ ...timesFont, border: '1px solid #000', padding: '0.5rem' }}>
+        <h4 style={{ ...timesFont, borderBottom: '1px solid #000', paddingBottom: '2px', marginBottom: '0.4rem', textTransform: 'uppercase', fontSize: '0.8rem', textAlign: 'center' }}>Weather Desk</h4>
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ fontSize: '2rem', fontWeight: 'bold' }}>{data.temp}°C</span>
+          <p style={{ fontSize: '0.8rem', margin: 0, textTransform: 'uppercase' }}>{data.city}</p>
+        </div>
+      </div>
+    );
+  }
+
 
   return null;
 }

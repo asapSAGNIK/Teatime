@@ -16,23 +16,17 @@ def _map_to_category(text: str) -> str:
     return "Culture & Entertainment"
 
 
-async def fetch_google_trends() -> List[RawStory]:
-    """Fetch real trending topics from Google Trends RSS."""
+async def fetch_google_news() -> List[RawStory]:
+    """Fetch headlines from Google News RSS instead of just search trends."""
     stories: List[RawStory] = []
 
     try:
-        feed = feedparser.parse("https://trends.google.com/trending/rss?geo=US")
+        feed = feedparser.parse("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en")
         for i, entry in enumerate(feed.entries[:10]):
             title = entry.title
-            desc = getattr(entry, 'ht_news_item_snippet', entry.get("summary", ""))
-            if not desc:
-                desc = entry.get("summary", "")
+            desc = entry.get("summary", "")
             source_url = entry.link
             
-            image_url = None
-            if hasattr(entry, 'ht_picture'):
-                image_url = entry.ht_picture
-
             category = _map_to_category(f"{title} {desc}")
 
             story = RawStory(
@@ -40,18 +34,17 @@ async def fetch_google_trends() -> List[RawStory]:
                 summary=desc,
                 source_url=source_url,
                 category=category,
-                image_url=image_url,
                 virlo_data={
                     "name": title,
                     "description": desc,
                     "ranking": i + 1,
-                    "source": "google_trends",
+                    "source": "google_news_top",
                 },
             )
             stories.append(story)
             
-        print(f"Google Trends: Fetched {len(stories)} trending topics.")
+        print(f"Google News: Fetched {len(stories)} headlines.")
     except Exception as e:
-        print(f"❌ Google Trends error: {e}")
+        print(f"❌ Google News error: {e}")
 
     return stories
