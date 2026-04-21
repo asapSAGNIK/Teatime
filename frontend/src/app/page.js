@@ -84,7 +84,7 @@ export default async function Home() {
   // 3. THE MASTER ALIGN FLOW (Stable & Deterministic - No Hydration Errors)
   let masterItems = [];
   const articleStack = [...articlesPool];
-  const intelStack = [...intelligencePool];
+  const intelStack = [...intelligencePool].slice(0, 10);
 
   // Requirement 3: Top-Left Attraction Box
   if (intelStack.length > 0) masterItems.push(intelStack.shift());

@@ -57,7 +57,13 @@ export default function IntelligenceCard({ type, data }) {
 
 
     return (
-      <div className="newspaper-block" style={timesFont}>
+      <a 
+        href={data.url} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="newspaper-block" 
+        style={{ ...timesFont, textDecoration: 'none', color: 'inherit', display: 'block' }}
+      >
         <h4 style={{ ...timesFont, borderBottom: '2px double #000', paddingBottom: '2px', marginBottom: '0.6rem', textTransform: 'uppercase', fontSize: '1.1rem', textAlign: 'center', fontWeight: 'bold' }}>Viral Intel</h4>
         <div className="viral-card-content" style={{ padding: '0px' }}>
           {data.thumbnail && (
@@ -74,10 +80,8 @@ export default function IntelligenceCard({ type, data }) {
           <p style={{ ...timesFont, fontSize: '0.9rem', lineHeight: '1.2' }}>
             {data.description}
           </p>
-          <a href={data.url} target="_blank" rel="noopener noreferrer" style={{ ...timesFont, display: 'block', textAlign: 'right', fontSize: '0.75rem', textDecoration: 'underline', marginTop: '0.4rem', fontWeight: 'bold' }}>VIEW REPORT →</a>
         </div>
-      </div>
-
+      </a>
     );
   }
 

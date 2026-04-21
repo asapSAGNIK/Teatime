@@ -1,11 +1,16 @@
 import httpx
 import feedparser
+import re
 from fastapi import APIRouter
 from config import settings
 
 from database.crud import get_trending_cache, update_trending_cache
 
 router = APIRouter()
+
+def clean_html(text):
+    """Remove HTML tags from a string."""
+    return re.sub(r'<[^>]*>', '', text)
 
 @router.get("/trending")
 async def get_trending():
@@ -34,11 +39,16 @@ async def sync_trending_data():
         # Use Google News Top Stories RSS
         feed = feedparser.parse("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en")
         for i, entry in enumerate(feed.entries[:5]): # Top 5 headlines
+            desc = clean_html(entry.get("summary", ""))
+            # Keep it concise
+            if len(desc) > 150:
+                desc = desc[:147] + "..."
+                
             result["trends"].append({
                 "name": entry.title,
-                "description": entry.get("summary", ""),
+                "description": desc,
                 "ranking": i + 1,
-                "image": None # Google News RSS doesn't provide easy thumbs
+                "image": None 
             })
     except Exception as e:
         print(f"Failed to fetch Google News: {e}")
