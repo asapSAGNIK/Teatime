@@ -1,6 +1,7 @@
 import httpx
 import feedparser
 import re
+import asyncio
 from fastapi import APIRouter
 from config import settings
 
@@ -72,9 +73,9 @@ async def sync_trending_data():
     except Exception as e:
         print(f"Failed to fetch Reddit Niches: {e}")
 
-    # 3. FETCH MARKETS (Alpha Vantage)
+    # 3. FETCH MARKETS (Alpha Vantage) - Reduced to 2 symbols to respect strict Free-tier minute/day limits
     if settings.ALPHAVANTAGE_API_KEY:
-        symbols = ["IBM", "AAPL", "DIA", "TSLA"] # Using some defaults for market signal
+        symbols = ["DIA", "QQQ"] # Dow & Nasdaq proxies
         try:
             async with httpx.AsyncClient(timeout=15) as client:
                 for symbol in symbols:
@@ -88,13 +89,15 @@ async def sync_trending_data():
                     )
                     if mres.status_code == 200:
                         quote = mres.json().get("Global Quote", {})
-                        if quote:
+                        if quote and quote.get("01. symbol"):
                             result["markets"].append({
                                 "symbol": quote.get("01. symbol"),
                                 "price": quote.get("05. price"),
                                 "change": quote.get("09. change"),
                                 "change_percent": quote.get("10. change percent")
                             })
+                    # Tiny pause to avoid "5 calls per minute" burst limit
+                    await asyncio.sleep(1) 
         except Exception as e:
             print(f"Markets fetch failed: {e}")
 

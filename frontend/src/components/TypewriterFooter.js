@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 
 export default function TypewriterFooter() {
   const [text, setText] = useState("");
-  const fullText = "Virlo API might fail due to insufficient credit balance, but Connection Exists!!";
+  const fullText = "AetherNews Autonomous Pipeline: Monitoring Global News Streams... Signal Clear.";
   const [isTyping, setIsTyping] = useState(false);
   const containerRef = useRef(null);
 

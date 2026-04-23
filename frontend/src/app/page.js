@@ -54,34 +54,34 @@ export default async function Home() {
   const articlesPool = uniqueArticles.map(a => ({ type: 'article', data: a }));
   const intelligencePool = [];
 
-  // 3. Populate Intelligence Pool (DENSE)
+  // 3. Populate Intelligence Pool (DIVERSIFIED QUOTA)
   const trendData = intelligence.trends || [];
   if (trendData.length > 0) {
-    for (let i = 0; i < trendData.length; i += 3) {
+    // 3 Pulse cards max
+    for (let i = 0; i < Math.min(trendData.length, 9); i += 3) {
       intelligencePool.push({ type: 'trend', data: trendData.slice(i, i + 3) });
     }
-  } else {
-    for (let i = 0; i < 3; i++) intelligencePool.push({ type: 'trend', data: [] });
   }
 
   const combinedVideos = [...(intelligence.instagram || []), ...(intelligence.youtube || [])];
   if (combinedVideos.length > 0) {
-    combinedVideos.forEach(v => intelligencePool.push({ type: 'video', data: v }));
-  } else {
-    for (let i = 0; i < 3; i++) intelligencePool.push({ type: 'video', data: null });
+    // 3-4 Videos max
+    combinedVideos.slice(0, 3).forEach(v => intelligencePool.push({ type: 'video', data: v }));
   }
 
   const nicheData = intelligence.niches || [];
-  nicheData.slice(0, 4).forEach(n => {
-    intelligencePool.push({ type: 'niche', data: n });
-  });
-
-  // Inject Weather Card
-  if (intelligence.weather && intelligence.weather.temp) {
-    intelligencePool.push({ type: 'weather', data: intelligence.weather });
+  if (nicheData.length > 0) {
+    // 2-3 Bulletin cards max
+    nicheData.slice(0, 3).forEach(n => {
+      intelligencePool.push({ type: 'niche', data: n });
+    });
   }
 
-  // Inject Markets Card (High Priority)
+  // High Priority: Weather & Markets (always at front if available)
+  if (intelligence.weather && intelligence.weather.temp) {
+    intelligencePool.unshift({ type: 'weather', data: intelligence.weather });
+  }
+
   if (intelligence.markets && intelligence.markets.length > 0) {
     intelligencePool.unshift({ type: 'markets', data: intelligence.markets });
   }
@@ -89,7 +89,9 @@ export default async function Home() {
   // 3. THE MASTER ALIGN FLOW (Stable & Deterministic - No Hydration Errors)
   let masterItems = [];
   const articleStack = [...articlesPool];
+  // Strictly limit to 10 unique intelligence signals across types
   const intelStack = [...intelligencePool].slice(0, 10);
+
 
   // Requirement 3: Top-Left Attraction Box
   if (intelStack.length > 0) masterItems.push(intelStack.shift());

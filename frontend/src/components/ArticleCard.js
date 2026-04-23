@@ -95,11 +95,18 @@ export default function ArticleCard({ article }) {
   };
 
   // Granular News Depth: 300 to 1500 chars 
-  // We need a wider variety of sizes to help the Masonry engine fill the "bottom right" holes.
   const fullText = paragraphs.join(' ');
   const granularLimit = 300 + (slug.length * 37) % 1200; 
   const lastStop = fullText.lastIndexOf('.', granularLimit);
-  const snippet = lastStop > 250 ? fullText.slice(0, lastStop + 1) : fullText.slice(0, granularLimit);
+  
+  let snippet = "";
+  if (lastStop > 250) {
+    snippet = fullText.slice(0, lastStop + 1);
+  } else {
+    // If no period, at least end at a space so we don't cut words in half
+    const spaceAt = fullText.lastIndexOf(' ', granularLimit);
+    snippet = spaceAt > 0 ? fullText.slice(0, spaceAt) : fullText.slice(0, granularLimit);
+  }
 
   return (
     <article className="article-card" style={{ marginBottom: '1rem', display: 'block', width: '100%' }}>
