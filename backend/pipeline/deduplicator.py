@@ -4,7 +4,7 @@ from typing import List, Optional
 from groq import Groq
 from config import settings
 
-GROQ_MODEL = "llama-3.1-8b-instant"
+GROQ_MODEL = "openai/gpt-oss-20b"
 
 groq_client = Groq(api_key=settings.GROQ_API_KEY) if settings.GROQ_API_KEY else None
 

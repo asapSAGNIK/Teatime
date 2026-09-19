@@ -5,7 +5,7 @@ from models.schemas import ArticleCreate
 from config import settings
 from pipeline.prompts import EDITOR_SYSTEM_PROMPT
 
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "openai/gpt-oss-120b"
 
 groq_client = Groq(api_key=settings.GROQ_API_KEY) if settings.GROQ_API_KEY else None
 
