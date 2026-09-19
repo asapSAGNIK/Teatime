@@ -1,3 +1,4 @@
+import asyncio
 import re
 from groq import Groq
 from models.schemas import ArticleCreate
@@ -29,7 +30,8 @@ async def run_editor_pass(draft: ArticleCreate) -> ArticleCreate:
     """
 
     try:
-        completion = groq_client.chat.completions.create(
+        completion = await asyncio.to_thread(
+            groq_client.chat.completions.create,
             model=GROQ_MODEL,
             messages=[
                 {"role": "system", "content": EDITOR_SYSTEM_PROMPT},

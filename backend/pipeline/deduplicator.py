@@ -1,3 +1,4 @@
+import asyncio
 import re
 from typing import List, Optional
 from groq import Groq
@@ -38,7 +39,8 @@ Is the NEW STORY already covered by any of the PREVIOUS STORIES above? (YES/NO)
 
     try:
         # Using a fast, cheap model for this utility task
-        completion = groq_client.chat.completions.create(
+        completion = await asyncio.to_thread(
+            groq_client.chat.completions.create,
             model=GROQ_MODEL,
             messages=[
                 {"role": "system", "content": DEDUPE_SYSTEM_PROMPT},

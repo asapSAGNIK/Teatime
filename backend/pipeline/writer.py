@@ -1,3 +1,4 @@
+import asyncio
 import re
 from typing import Optional
 from groq import Groq
@@ -32,7 +33,8 @@ async def write_article(brief: ResearchBrief) -> Optional[ArticleCreate]:
     """
 
     try:
-        completion = groq_client.chat.completions.create(
+        completion = await asyncio.to_thread(
+            groq_client.chat.completions.create,
             model=GROQ_MODEL,
             messages=[
                 {"role": "system", "content": WRITER_SYSTEM_PROMPT},
